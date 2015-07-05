@@ -7,7 +7,7 @@
 #
 
 require_relative '../util'
-require_relative '../../output'
+require_relative '../../output/output_stat'
 
 module HdfsUtils
   #
@@ -23,9 +23,9 @@ module HdfsUtils
     end
 
     def run
-      sp = Output.new(@settings)
+      sp = OutputStat.new(@settings)
       @args.each do |path|
-        sp.run(@client.stat(path))
+        sp.run(@client.stat(path), path)
       end
     end
   end

@@ -13,50 +13,53 @@ module HdfsUtils
   class EnvironmentSettings
     public
 
+    def initialize(settings)
+      @settings = settings
+    end
+
     #
     # Merge the environment settings into the settings structure
     #
-    def merge(settings)
-      host(settings)
-      port(settings)
-      username(settings)
-      doas(settings)
-      proxyhost(settings)
-      proxyport(settings)
-      hdfsuri(settings)
-      settings
+    def merge
+      host
+      port
+      username
+      doas
+      proxyhost
+      proxyport
+      hdfsuri
     end
 
     private
 
-    def host(settings)
+    def host
       return unless ENV['HDFS_HOST']
-      settings[:host] = ENV['HDFS_HOST']
+      @settings[:host] = ENV['HDFS_HOST']
     end
 
-    def port(settings)
+    def port
       return unless ENV['HDFS_PORT']
-      settings[:port] = ENV['HDFS_PORT']
+      @settings[:port] = ENV['HDFS_PORT']
     end
 
-    def username(settings)
+    def username
       return unless ENV['HDFS_USERNAME'] || ENV['USER']
-      settings[:username] = ENV['HDFS_USERNAME'] || ENV['USER']
+      @settings[:username] = ENV['HDFS_USERNAME'] || ENV['USER']
     end
 
-    def doas(settings)
+    def doas
       return unless ENV['HDFS_DOAS']
-      settings[:doas] = ENV['HDFS_DOAS']
+      @settings[:doas] = ENV['HDFS_DOAS']
     end
 
-    def proxyhost(settings)
+    def proxyhost
       return unless ENV['HDFS_PROXYHOST']
-      settings[:proxyhost] = ENV['HDFS_PROXYHOST']
+      @settings[:proxyhost] = ENV['HDFS_PROXYHOST']
     end
 
-    def proxyport(settings)
+    def proxyport
       return unless ENV['HDFS_PROXYPORT']
-      settings[:proxyport] = ENV['HDFS_PROXYPORT']
+      @settings[:proxyport] = ENV['HDFS_PROXYPORT']
     end
 
     ERRMSG = 'may not both be set in the environment'
@@ -66,7 +69,7 @@ module HdfsUtils
     # verify that there are no environment variables that
     # conflict with the HDFS URI.
     #
-    def hdfsuri(settings)
+    def hdfsuri
       env_uri = ENV['HDFS_URI'] || ENV['HDFS_URL']
       return unless env_uri
 
@@ -85,9 +88,9 @@ module HdfsUtils
       end
 
       uri = ParseHdfsURI.new.parse(env_uri)
-      settings[:host] = uri.host
-      settings[:port] = uri.port
-      settings[:user] = uri.userinfo
+      @settings[:host] = uri.host
+      @settings[:port] = uri.port
+      @settings[:user] = uri.userinfo
     end
   end
 end

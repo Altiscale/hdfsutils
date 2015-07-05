@@ -20,12 +20,15 @@ module HdfsUtils
 
     def initialize(settings)
       @settings = settings
+      @logger = settings[:logger]
     end
 
     def start
-      puts "host: #{@settings[:host]}"
-      puts "port: #{@settings[:port]}"
-      puts "username: #{@settings[:username]}"
+      @logger.info("starting webhdfs client")
+      @logger.info("  host: " + @settings[:host])
+      @logger.info("  port: " + @settings[:port])
+      @logger.info("  username: " + @settings[:username])
+
       @client = WebHDFS::Client.new(@settings[:host],
                                     @settings[:port],
                                     @settings[:username])
@@ -47,7 +50,9 @@ module HdfsUtils
       begin
         @client.kerberos = @kerberos
         @client.stat('/') # this operation should always work
+        @logger.debug('webhdfs started')
       rescue WebHDFS::SecurityError
+        @logger.debug('webhdfs start failed: trying kerberos authentication')
         @kerberos = true
         retry
       rescue WebHDFS::KerberosError => ex

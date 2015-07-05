@@ -7,7 +7,10 @@
 #
 
 require 'ostruct'
+require 'logger'
+require_relative 'settings/system_settings'
 require_relative 'settings/environment_settings'
+require_relative 'settings/commandline_settings'
 
 module HdfsUtils
   #
@@ -27,8 +30,28 @@ module HdfsUtils
       #   2. system configuration files (e.g. Hadoop xml files)
       #   3. environment variables (typically set using the shell)
       #   4. command-line arguments
-      EnvironmentSettings.new.merge(@settings)
+      defaults
+      SystemSettings.new(@settings).merge
+      EnvironmentSettings.new(@settings).merge
+      CommandlineSettings.new(@settings).merge(argv)
+
+      init_logger
       @settings
+    end
+
+    private
+
+    def defaults
+      @settings[:host] = 'localhost'
+      @settings[:port] = '50070'
+      @settings[:log_level] = 'FATAL'
+    end
+
+    # initialize logger
+    def init_logger
+      logger = Logger.new(STDERR)
+      logger.level = Logger.const_get(@settings[:log_level].upcase)
+      @settings[:logger] = logger
     end
   end
 end
