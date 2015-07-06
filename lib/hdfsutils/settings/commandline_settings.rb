@@ -51,8 +51,8 @@ module HdfsUtils
     def parse(argv)
       @options.parse!(argv)
     rescue OptionParser::InvalidOption, OptionParser::MissingArgument
-      puts "#{$!}\n\n"
-      puts @options
+      STDERR.puts "#{$!}\n\n"
+      STDERR.puts @options
       exit! 1
     end
 
@@ -61,6 +61,7 @@ module HdfsUtils
       unless LOG_LEVELS.include?(@settings.log_level.downcase)
         STDERR.puts "Invalid log_level (#{@settings.log_level}).  " \
                     "Valid values: #{LOG_LEVELS.join(', ')}\n\n"
+        STDERR.puts @options
         exit! 1
       end
     end

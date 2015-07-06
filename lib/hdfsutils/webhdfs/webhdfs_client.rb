@@ -49,8 +49,11 @@ module HdfsUtils
       @kerberos = false
       begin
         @client.kerberos = @kerberos
-        @client.stat('/') # this operation should always work
-        @logger.debug('webhdfs started')
+        if @client.stat('/') # this operation should always work
+          @logger.debug('webhdfs started')
+        else
+          @logger.warn('webhdfs failed to GETFILESTATUS /')
+        end
       rescue WebHDFS::SecurityError
         @logger.debug('webhdfs start failed: trying kerberos authentication')
         @kerberos = true
