@@ -8,9 +8,9 @@
 
 require 'ostruct'
 require 'logger'
-require_relative 'settings/system_settings'
-require_relative 'settings/environment_settings'
-require_relative 'settings/commandline_settings'
+require 'settings/system_settings'
+require 'settings/environment_settings'
+require 'settings/commandline_settings'
 
 module HdfsUtils
   #

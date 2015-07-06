@@ -1,13 +1,13 @@
 #
-# Program: hdfs_ls.rb
+# Utility: hls.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
-require_relative '../util'
-require_relative '../../output/output_stat'
+require 'utils/util'
+require 'output/output_stat'
 
 module HdfsUtils
   #

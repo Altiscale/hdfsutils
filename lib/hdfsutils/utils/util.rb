@@ -6,8 +6,8 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
-require_relative '../settings'
-require_relative '../webhdfs/webhdfs_client'
+require 'settings'
+require 'webhdfs/webhdfs_client'
 
 module HdfsUtils
   #
