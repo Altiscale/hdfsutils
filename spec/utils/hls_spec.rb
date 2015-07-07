@@ -69,7 +69,11 @@ describe HdfsUtils::Ls do
                 '         0 2015-05-15 21:03 ' +
                 dirname + "\n"
 
-    expect { HdfsUtils::Ls.new(['--log-level', 'dEbUg', dirname]).run }
+    expect {
+      HdfsUtils::Ls.new('hls',
+                        ['--log-level', 'dEbUg',
+                         '-ld',
+                         dirname]).run }
       .to output(ls_output)
       .to_stdout
   end

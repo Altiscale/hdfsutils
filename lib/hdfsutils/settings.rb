@@ -22,9 +22,10 @@ module HdfsUtils
 
     def initialize
       @settings = OpenStruct.new
+      @settings.fatal = Fatal.new # must be initialized as soon as possible
     end
 
-    def run(argv)
+    def run(argv, optsproc)
       # precedence order for settings (higher dominates lower)
       #   1. application defaults (built into this gem)
       #   2. system configuration files (e.g. Hadoop xml files)
@@ -33,7 +34,7 @@ module HdfsUtils
       defaults
       SystemSettings.new(@settings).merge
       EnvironmentSettings.new(@settings).merge
-      CommandlineSettings.new(@settings).merge(argv)
+      CommandlineSettings.new(@settings).merge(argv, optsproc)
 
       init_logger
       @settings
@@ -44,7 +45,7 @@ module HdfsUtils
     def defaults
       @settings[:host] = 'localhost'
       @settings[:port] = '50070'
-      @settings[:log_level] = 'FATAL'
+      @settings[:log_level] = 'Fatal'
     end
 
     # initialize logger
@@ -52,6 +53,7 @@ module HdfsUtils
       logger = Logger.new(STDERR)
       logger.level = Logger.const_get(@settings[:log_level].upcase)
       @settings[:logger] = logger
+      @settings.fatal.logger = logger unless @settings[:log_level] == 'Fatal'
     end
   end
 end

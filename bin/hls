@@ -11,4 +11,6 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib/hdfsutils"))
 require 'utils/hls/ls'
-HdfsUtils::Ls.new(ARGV).run
+
+HdfsUtils::Ls.new('hls', ARGV).run
+exit 0

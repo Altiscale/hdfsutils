@@ -6,6 +6,8 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
+require 'fatal'
+
 module HdfsUtils
   #
   # This class provides configuration information from the execution environment.
@@ -28,6 +30,8 @@ module HdfsUtils
       proxyhost
       proxyport
       hdfsuri
+    rescue
+      @settings.fatal.die(Fatal::BADENV, $!)
     end
 
     private

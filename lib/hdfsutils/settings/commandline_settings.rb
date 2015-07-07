@@ -22,8 +22,8 @@ module HdfsUtils
     #
     # Merge the environment settings into the settings structure
     #
-    def merge(argv)
-      setup
+    def merge(argv, optsproc)
+      setup(optsproc)
       parse(argv)
       validate
     end
@@ -38,8 +38,16 @@ module HdfsUtils
       'fatal'
     ]
 
-    def setup
+    def setup(optsproc)
       @options = OptionParser.new do |opts|
+        # set up options that are specific to the utility
+        optsproc.call(opts, @settings) if optsproc
+
+        # set up options that are generic for all utilities
+        opts.on('--help', 'Show this help message.') do |log_level|
+          puts opts
+          exit! 0
+        end
         opts.on('--log-level LEVEL',
                 "Log level: #{LOG_LEVELS.join(', ')}") do |log_level|
           @settings.log_level = log_level
