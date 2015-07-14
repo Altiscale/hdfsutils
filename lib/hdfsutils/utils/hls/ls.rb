@@ -68,7 +68,7 @@ module HdfsUtils
         return
       end
       if (stat['type'] == 'DIRECTORY') && !@settings.dir_plain
-        ls_dir(stat, path)
+        ls_dir(path)
         return
       end
       ls_plain(stat, path)
@@ -91,8 +91,25 @@ module HdfsUtils
     #
     # Lists a directory
     #
-    def ls_dir(stat, path)
-      fail "oops! ls_dir not implemented yet!"
+    def ls_dir(path)
+      list = @client.list(path)
+      unless list && (list.is_a? Array)
+        fail "list operation failed for #{path}"
+      end
+      subdirs = []
+      list.each do |stat|
+        suffix = stat['pathSuffix']
+        if (stat['type'] == 'DIRECTORY')
+          subdirs << path + '/' + suffix
+        end
+        ls_plain(stat, suffix)
+      end
+      return unless @settings.recursive
+      subdirs.each do |subdir|
+        puts
+        puts subdir + ':'
+        ls_dir(subdir)
+      end
     end
   end
 end
