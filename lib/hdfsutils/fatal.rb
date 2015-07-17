@@ -19,6 +19,7 @@ module HdfsUtils
     BADARGS = 1 # incorrect command-line arguments
     BADENV = 2 # incorrect environment variables
     BADINIT = 3 # uncaught exception in initialization
+    BADASSERT = 4 # assertion failure in the code (typically a bug)
     BADRUN = -1 # uncaught exception while running
 
     attr_accessor :logger
