@@ -23,6 +23,7 @@ module HdfsUtils
       super(name, argv, util_opts)
       # initialize stat printer, if necessary
       @sp = @settings.long_format ? OutputStat.new(@settings) : nil
+      @logger = @settings.logger
     rescue # never send a stack trace to the user (except when debugging)
       @settings.fatal.die(Fatal::BADINIT, $!)
     end
@@ -68,6 +69,7 @@ module HdfsUtils
         return
       end
       if (stat['type'] == 'DIRECTORY') && !@settings.dir_plain
+        @logger.debug("listing directory #{path}")
         ls_dir(path)
         return
       end

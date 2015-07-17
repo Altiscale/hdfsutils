@@ -39,7 +39,9 @@ module HdfsUtils
       check_kerberos
       @client
     rescue Exception => ex
-      raise "failed to start webhdfs client: #{ex.message}"
+      raise 'failed to start webhdfs client [' +
+            @settings[:host] + ':' + @settings[:port] + ']: ' +
+            ex.message
     end
 
     private

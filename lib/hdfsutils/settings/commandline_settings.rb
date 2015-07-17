@@ -7,6 +7,8 @@
 #
 
 require 'optparse'
+require 'settings/parse_hdfs_uri'
+
 
 module HdfsUtils
   #
@@ -47,6 +49,13 @@ module HdfsUtils
         opts.on('--help', 'Show this help message.') do |log_level|
           puts opts
           exit! 0
+        end
+        opts.on('--hdfsuri URI',
+                "Location of the webhdfs service.") do |hdfsuri|
+          uri = ParseHdfsURI.new.parse(hdfsuri)
+          @settings[:host] = uri.host
+          @settings[:port] = uri.port.to_s
+          @settings[:user] = uri.userinfo
         end
         opts.on('--log-level LEVEL',
                 "Log level: #{LOG_LEVELS.join(', ')}") do |log_level|

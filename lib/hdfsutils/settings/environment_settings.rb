@@ -7,6 +7,7 @@
 #
 
 require 'fatal'
+require 'settings/parse_hdfs_uri'
 
 module HdfsUtils
   #
@@ -93,7 +94,7 @@ module HdfsUtils
 
       uri = ParseHdfsURI.new.parse(env_uri)
       @settings[:host] = uri.host
-      @settings[:port] = uri.port
+      @settings[:port] = uri.port.to_s
       @settings[:user] = uri.userinfo
     end
   end
