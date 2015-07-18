@@ -18,7 +18,7 @@ module LsImplementation
   def ls(path)
     # initialize stat printer, if necessary
     @sp = @settings.long_format ? HdfsUtils::OutputStat.new(@settings) : nil
-    
+
     stat = @client.stat(path)
     # TODO: check possible error returns from @client.stat
     unless stat

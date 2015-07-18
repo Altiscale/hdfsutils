@@ -11,7 +11,8 @@ require 'settings/parse_hdfs_uri'
 
 module HdfsUtils
   #
-  # This class provides configuration information from the execution environment.
+  # This class provides configuration information from the
+  # execution environment (typically the shell environment).
   #
   class EnvironmentSettings
     public

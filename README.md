@@ -59,3 +59,7 @@ All of the utilities take the following options, which override the environment 
     <td>fatal</td>
   </tr>
 </table>
+
+## Contributing
+
+Altiscale has just started developing hdfsutils.  We're focusing on delivering a specific use case for one of our customers, but intend to build a much more complete set of utilities.  Contributions are welcome.

@@ -9,10 +9,10 @@
 require 'optparse'
 require 'settings/parse_hdfs_uri'
 
-
 module HdfsUtils
   #
-  # This class provides configuration information from the execution environment.
+  # This class provides configuration information from the
+  # command line arguments.
   #
   class CommandlineSettings
     public
@@ -32,13 +32,7 @@ module HdfsUtils
 
     private
 
-    LOG_LEVELS = [
-      'debug',
-      'info',
-      'warn',
-      'error',
-      'fatal'
-    ]
+    LOG_LEVELS = %w(debug info warn error fatal)
 
     def setup(optsproc)
       @options = OptionParser.new do |opts|
@@ -46,12 +40,12 @@ module HdfsUtils
         optsproc.call(opts, @settings) if optsproc
 
         # set up options that are generic for all utilities
-        opts.on('--help', 'Show this help message.') do |log_level|
+        opts.on('--help', 'Show this help message.') do |_log_level|
           puts opts
           exit! 0
         end
         opts.on('--hdfsuri URI',
-                "Location of the webhdfs service.") do |hdfsuri|
+                'Location of the webhdfs service.') do |hdfsuri|
           uri = ParseHdfsURI.new.parse(hdfsuri)
           @settings[:host] = uri.host
           @settings[:port] = uri.port.to_s

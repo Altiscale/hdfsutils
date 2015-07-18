@@ -22,7 +22,7 @@ module HdfsUtils
     # argv     = [String] Command-line argument array.
     # optsproc = [lambda] Options configuration injected by the utility.
     #
-    def initialize(name, argv, optsproc=nil)
+    def initialize(name, argv, optsproc = nil)
       @name = name
       @args = argv
       @settings = Settings.new.run(argv, optsproc)
@@ -34,7 +34,7 @@ module HdfsUtils
     # Abstract interface.  Every subclass must implement the run function.
     #
     def run
-      raise 'Subclass of Util must override Util::run'
+      fail 'Subclass of Util must override Util::run'
     end
   end
 end

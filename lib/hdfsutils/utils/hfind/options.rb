@@ -13,7 +13,7 @@ module FindOptions
   # The lambda is injected into the Util superclass option handling.
   #
   def util_opts
-    lambda do |opts, settings|
+    lambda do |opts, _settings|
       opts.banner = "Usage: #{@name} [options] [file ...]"
     end
   end

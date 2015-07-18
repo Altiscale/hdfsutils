@@ -9,7 +9,6 @@
 #
 
 module HlsSpecWebmock
-
   def hls_spec_webmock(options)
     root_stat
     dir_stat
@@ -32,10 +31,10 @@ module HlsSpecWebmock
         'accessTime' => 0,
         'blockSize' => 0,
         'childrenNum' => 10,
-        'fileId' => 16386,
+        'fileId' => 16_386,
         'group' => 'hdfs',
         'length' => 0,
-        'modificationTime' => 1433791576835,
+        'modificationTime' => 1_433_791_576_835,
         'owner' => 'hdfs',
         'pathSuffix' => '',
         'permission' => '755',
@@ -51,10 +50,10 @@ module HlsSpecWebmock
         'accessTime' => 0,
         'blockSize' => 0,
         'childrenNum' => 2,
-        'fileId' => 16580,
+        'fileId' => 16_580,
         'group' => 'users',
         'length' => 0,
-        'modificationTime' => 1431723784561,
+        'modificationTime' => 1_431_723_784_561,
         'owner' => 'testuser',
         'pathSuffix' => '',
         'permission' => '755',
@@ -66,13 +65,13 @@ module HlsSpecWebmock
 
   def file_stat(filename)
     @file_stat = {
-      'accessTime' => 1435870426079,
-      'blockSize' => 268435456,
+      'accessTime' => 1_435_870_426_079,
+      'blockSize' => 268_435_456,
       'childrenNum' => 0,
-      'fileId' => 17199,
+      'fileId' => 17_199,
       'group' => 'users',
       'length' => 5812,
-      'modificationTime' => 1431723840094,
+      'modificationTime' => 1_431_723_840_094,
       'owner' => 'testuser',
       'pathSuffix' => filename,
       'permission' => '775',
@@ -83,13 +82,13 @@ module HlsSpecWebmock
 
   def file2_stat(filename)
     @file2_stat = {
-      'accessTime' => 1435870426079,
-      'blockSize' => 268435456,
+      'accessTime' => 1_435_870_426_079,
+      'blockSize' => 268_435_456,
       'childrenNum' => 0,
-      'fileId' => 17200,
+      'fileId' => 17_200,
       'group' => 'users',
-      'length' => 268435456,
-      'modificationTime' => 1431723141592,
+      'length' => 268_435_456,
+      'modificationTime' => 1_431_723_141_592,
       'owner' => 'testuser',
       'pathSuffix' => filename,
       'permission' => '775',
@@ -100,13 +99,13 @@ module HlsSpecWebmock
 
   def file3_stat(filename)
     @file3_stat = {
-      'accessTime' => 1435870426079,
-      'blockSize' => 268435456,
+      'accessTime' => 1_435_870_426_079,
+      'blockSize' => 268_435_456,
       'childrenNum' => 0,
-      'fileId' => 17201,
+      'fileId' => 17_201,
       'group' => 'users',
-      'length' => 379334628,
-      'modificationTime' => 1431728886662,
+      'length' => 379_334_628,
+      'modificationTime' => 1_431_728_886_662,
       'owner' => 'testuser',
       'pathSuffix' => filename,
       'permission' => '775',
@@ -120,10 +119,10 @@ module HlsSpecWebmock
       'accessTime' => 0,
       'blockSize' => 0,
       'childrenNum' => 0,
-      'fileId' => 17175,
+      'fileId' => 17_175,
       'group' => 'users',
       'length' => 0,
-      'modificationTime' => 1431724020397,
+      'modificationTime' => 1_431_724_020_397,
       'owner' => 'testuser',
       'pathSuffix' => dir2name,
       'permission' => '700',
@@ -156,7 +155,7 @@ module HlsSpecWebmock
 
   def urls_and_header(options)
     dirname = options[:dirname]
-    @ctheader = {'Content-Type' => 'application/json'}
+    @ctheader = { 'Content-Type' => 'application/json' }
 
     @hostname = 'nn-cluster.nsdc.altiscale.com'
     @port = '50070'
@@ -172,8 +171,8 @@ module HlsSpecWebmock
                   @username
 
     @testlisturl = 'http://' + @hostname + ':' + @port +
-                  '/webhdfs/v1' + dirname +
-                  '?op=LISTSTATUS&user.name=' +
+                   '/webhdfs/v1' + dirname +
+                   '?op=LISTSTATUS&user.name=' +
                    @username
 
     return unless options[:file2name]
@@ -187,22 +186,22 @@ module HlsSpecWebmock
 
   def stub_requests(options)
     stub_request(:get, @testrooturl)
-      .to_return(:body => JSON.generate(@root_stat),
-                 :headers => @ctheader)
+      .to_return(body: JSON.generate(@root_stat),
+                 headers: @ctheader)
 
     stub_request(:get, @testdirurl)
-      .to_return(:body => JSON.generate(@dir_stat),
-                 :headers => @ctheader)
+      .to_return(body: JSON.generate(@dir_stat),
+                 headers: @ctheader)
 
     stub_request(:get, @testlisturl)
-      .to_return(:body => JSON.generate(@dir_list),
-                 :headers => @ctheader)
+      .to_return(body: JSON.generate(@dir_list),
+                 headers: @ctheader)
 
     return unless options[:file2name]
 
     stub_request(:get, @testlist2url)
-      .to_return(:body => JSON.generate(@dir2_list),
-                 :headers => @ctheader)
+      .to_return(body: JSON.generate(@dir2_list),
+                 headers: @ctheader)
   end
 
   def setup_environment
@@ -211,4 +210,3 @@ module HlsSpecWebmock
     ENV['HDFS_USERNAME'] = @username
   end
 end
-

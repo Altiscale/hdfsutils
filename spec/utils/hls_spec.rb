@@ -19,16 +19,16 @@ describe HdfsUtils::Ls do
                      filename: 'not_used',
                      dir2name: 'not_used')
 
-    ls_output = 'drwxr-xr-x   - testuser users ' +
+    ls_output = 'drwxr-xr-x   - testuser users ' \
                 '         0 2015-05-15 21:03 ' +
                 dirname + "\n"
 
-    expect {
+    expect do
       HdfsUtils::Ls.new('hls',
                         ['--log-level', 'dEbUg',
                          '-ld',
                          dirname]).run
-    }.to output(ls_output).to_stdout
+    end.to output(ls_output).to_stdout
   end
 
   it 'should ls a directory' do
@@ -42,9 +42,9 @@ describe HdfsUtils::Ls do
     ls_output = filename + "\n" +
                 dir2name + "\n"
 
-    expect {
+    expect do
       HdfsUtils::Ls.new('hls', [dirname]).run
-    }.to output(ls_output).to_stdout
+    end.to output(ls_output).to_stdout
   end
 
   it 'should ls a directory in long format' do
@@ -62,12 +62,12 @@ describe HdfsUtils::Ls do
                 '         0 2015-05-15 21:07 ' +
                 dir2name + "\n"
 
-    expect {
+    expect do
       HdfsUtils::Ls.new('hls',
                         ['-l',
                          '--log-level', 'warn',
                          dirname]).run
-    }.to output(ls_output).to_stdout
+    end.to output(ls_output).to_stdout
   end
 
   it 'should ls a directory recursively' do
@@ -88,12 +88,12 @@ describe HdfsUtils::Ls do
                 file2name + "\n" +
                 file3name + "\n"
 
-    expect {
+    expect do
       HdfsUtils::Ls.new('hls',
                         ['-R',
                          dirname,
                          '--log-level', 'fatal']).run
-          }.to output(ls_output).to_stdout
+    end.to output(ls_output).to_stdout
   end
 
   it 'should ls a directory recursively in long format' do
@@ -122,13 +122,12 @@ describe HdfsUtils::Ls do
                 ' 379334628 2015-05-15 22:28 ' +
                 file3name + "\n"
 
-    expect {
+    expect do
       HdfsUtils::Ls.new('hls',
                         ['-lR',
                          '--log-level', 'info',
                          dirname]).run
-    }.to output(ls_output).to_stdout
+    end.to output(ls_output).to_stdout
   end
-
 end
 

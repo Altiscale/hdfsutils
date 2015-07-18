@@ -9,7 +9,7 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib/hdfsutils"))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib/hdfsutils'))
 require 'utils/hfind/find'
 
 HdfsUtils::Find.new('hfind', ARGV).run

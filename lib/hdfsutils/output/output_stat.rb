@@ -47,18 +47,18 @@ module HdfsUtils
     def output_repl(stat)
       repl = stat['replication']
       return '  -' if repl == 0
-      sprintf("%3d", repl)
+      sprintf('%3d', repl)
     end
 
     def output_size(stat)
-      sprintf("%10d", stat['length'])
+      sprintf('%10d', stat['length'])
     end
 
     def output_mtime(stat)
       time = Time.at(stat['modificationTime'] / 1000)
       # Outputs UTC.  To output in the local timezone,
       # call time.localtime.strftime
-      time.utc.strftime("%Y-%m-%d %H:%M")
+      time.utc.strftime('%Y-%m-%d %H:%M')
     end
   end
 end
