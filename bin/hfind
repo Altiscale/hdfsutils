@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+#
+# Executable: hfind
+#
+# HDFS find command
+#
+# Copyright (C) 2015 Altiscale, Inc.
+# Licensed under the Apache License, Version 2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib/hdfsutils"))
+require 'utils/hfind/find'
+
+HdfsUtils::Find.new('hfind', ARGV).run
+exit 0

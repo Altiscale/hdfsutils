@@ -10,10 +10,8 @@ require 'output/output_stat' # prints file stat structure
 
 #
 # This module implements ls.
-# While this implementation may inform the code for other utilities,
-# it is not intended to provide a generic pattern for all utilities.
 #
-module Implementation
+module LsImplementation
   #
   # The eponymous function lists a single path
   #

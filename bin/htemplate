@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+#
+# Executable: htemplate
+#
+# Template command for writing a new utility.
+#
+# Copyright (C) 2015 Altiscale, Inc.
+# Licensed under the Apache License, Version 2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib/hdfsutils"))
+require 'utils/htemplate/template'
+
+HdfsUtils::Template.new('htemplate', ARGV).run
+exit 0
