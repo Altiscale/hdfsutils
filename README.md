@@ -77,7 +77,7 @@ $ find . -path '*template*'
 ./spec/utils/htemplate_spec.rb
 ```
 
-The code in all pull requests must pass the rubocop and rspec tests.  New functionality should be submitted with corresponding rspec unit tests.  The best way to run rubocop and rspec is to use rvm, bundler, and rake.  Assuming that rvm is already installed with bundler in the default gemset, run rake as follows:
+The code in all pull requests must pass the rubocop and rspec tests.  New functionality should be submitted with corresponding rspec unit tests.  The best way to run rubocop and rspec is to use [rvm](http://rvm.io/), [bundler](http://bundler.io), and [rake](https://rubygems.org/gems/rake).  Assuming that rvm is already installed with bundler in the default gemset, run rake as follows:
 ```
 $ rvm use @hdfsutils-devel --create
 ruby-2.0.0-p353 - #gemset created /Users/chaiken/.rvm/gems/ruby-2.0.0-p353@hdfsutils-devel
