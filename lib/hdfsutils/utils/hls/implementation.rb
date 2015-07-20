@@ -37,13 +37,10 @@ module LsImplementation
   # Lists a file or directory as a plain file.
   #
   def ls_plain(stat, path)
-    if stat
-      if @sp
-        @sp.run(stat, path)
-      else
-        puts path
-      end
+    if @sp
+      @sp.run(stat, path)
     else
+      puts path
     end
   end
 
@@ -52,15 +49,12 @@ module LsImplementation
   #
   def ls_dir(path)
     list = @client.list(path)
-    unless list && (list.is_a? Array)
-      fail "list operation failed for #{path}"
-    end
+
+    fail "list operation failed for #{path}" unless list && (list.is_a? Array)
     subdirs = []
     list.each do |stat|
       suffix = stat['pathSuffix']
-      if (stat['type'] == 'DIRECTORY')
-        subdirs << path + '/' + suffix
-      end
+      subdirs << path + '/' + suffix if (stat['type'] == 'DIRECTORY')
       ls_plain(stat, suffix)
     end
     return unless @settings.recursive

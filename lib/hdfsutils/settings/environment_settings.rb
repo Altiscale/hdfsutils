@@ -85,13 +85,8 @@ module HdfsUtils
 
       varname = ENV['HDFS_URI'] ? 'HDFS_URI' : 'HDFS_URL'
 
-      if ENV['HDFS_HOST']
-        fail "HDFS_HOST and #{varname} #{ERRMSG}"
-      end
-
-      if ENV['HDFS_PORT']
-        fail "HDFS_PORT and #{varname} #{ERRMSG}"
-      end
+      fail "HDFS_HOST and #{varname} #{ERRMSG}" if ENV['HDFS_HOST']
+      fail "HDFS_PORT and #{varname} #{ERRMSG}" if ENV['HDFS_PORT']
 
       uri = ParseHdfsURI.new.parse(env_uri)
       @settings[:host] = uri.host

@@ -6,6 +6,9 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
+#
+# This module provides options that are specific to the utility.
+#
 module TemplateOptions
   #
   # This procedure provides options that are specific to the utility.

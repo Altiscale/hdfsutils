@@ -6,10 +6,12 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
+#
+# Options for the find utility.
+#
 module FindOptions
   #
-  # This procedure provides options that are specific to the utility.
-  # It is intended to provide a generic pattern for all utilities.
+  # Options for the find utility.
   # The lambda is injected into the Util superclass option handling.
   #
   def util_opts

@@ -69,12 +69,11 @@ module HdfsUtils
 
     # Validate the settings.
     def validate
-      unless LOG_LEVELS.include?(@settings.log_level.downcase)
-        STDERR.puts "Invalid log_level (#{@settings.log_level}).  " \
-                    "Valid values: #{LOG_LEVELS.join(', ')}\n\n"
-        STDERR.puts @options
-        exit! 1
-      end
+      return if LOG_LEVELS.include?(@settings.log_level.downcase)
+      STDERR.puts "Invalid log_level (#{@settings.log_level}).  " \
+                  "Valid values: #{LOG_LEVELS.join(', ')}\n\n"
+      STDERR.puts @options
+      exit! 1
     end
   end
 end

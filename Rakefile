@@ -7,4 +7,3 @@ RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:style)
 
 task default: %w(style spec)
-

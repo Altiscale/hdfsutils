@@ -7,17 +7,17 @@
 #
 
 require_relative '../spec_helper'
-require_relative 'hls_spec_webmock'
+require_relative 'common_spec_webmock'
 require 'utils/hls/ls'
 
 describe HdfsUtils::Ls do
-  include HlsSpecWebmock
+  include CommonSpecWebmock
 
   it 'should ls a directory as a plain file' do
     dirname = '/user/testuser/testdir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: 'not_used',
-                     dir2name: 'not_used')
+    common_spec_webmock(dirname: dirname,
+                        filename: 'not_used',
+                        dir2name: 'not_used')
 
     ls_output = 'drwxr-xr-x   - testuser users ' \
                 '         0 2015-05-15 21:03 ' +
@@ -35,9 +35,9 @@ describe HdfsUtils::Ls do
     dirname = '/user/testuser/anotherdir'
     filename = 'kv1.txt'
     dir2name = 'testdir002'
-    hls_spec_webmock(dirname: dirname,
-                     filename: filename,
-                     dir2name: dir2name)
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name)
 
     ls_output = filename + "\n" +
                 dir2name + "\n"
@@ -51,9 +51,9 @@ describe HdfsUtils::Ls do
     dirname = '/user/testuser/yetanotherdir'
     filename = 'another_filename'
     dir2name = 'another_sub_dir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: filename,
-                     dir2name: dir2name)
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name)
 
     ls_output = '-rwxrwxr-x   3 testuser users ' +
                 '      5812 2015-05-15 21:04 ' +
@@ -76,11 +76,11 @@ describe HdfsUtils::Ls do
     dir2name = 'sub_dir_for_recursion'
     file2name = 'testfile002'
     file3name = 'testfile003'
-    hls_spec_webmock(dirname: dirname,
-                     filename: filename,
-                     dir2name: dir2name,
-                     file2name: file2name,
-                     file3name: file3name)
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
 
     ls_output = filename + "\n" +
                 dir2name + "\n" + "\n" +
@@ -102,11 +102,11 @@ describe HdfsUtils::Ls do
     dir2name = 'recursion_dir_long'
     file2name = 'second_data_file'
     file3name = 'third_data_file'
-    hls_spec_webmock(dirname: dirname,
-                     filename: filename,
-                     dir2name: dir2name,
-                     file2name: file2name,
-                     file3name: file3name)
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
 
     ls_output = '-rwxrwxr-x   3 testuser users ' +
                 '      5812 2015-05-15 21:04 ' +
@@ -130,4 +130,3 @@ describe HdfsUtils::Ls do
     end.to output(ls_output).to_stdout
   end
 end
-

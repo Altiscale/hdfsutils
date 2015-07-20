@@ -9,6 +9,9 @@
 require 'pp'
 
 module HdfsUtils
+  #
+  # Outputs a webhdfs stat record
+  #
   class OutputStat
     public
 

@@ -7,17 +7,17 @@
 #
 
 require_relative '../spec_helper'
-require_relative 'hls_spec_webmock'
+require_relative 'common_spec_webmock'
 require 'utils/htemplate/template'
 
 describe HdfsUtils::Template do
-  include HlsSpecWebmock
+  include CommonSpecWebmock
 
   it 'should print droids' do
     dirname = '/user/testuser/testdir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: 'not_used',
-                     dir2name: 'not_used')
+    common_spec_webmock(dirname: dirname,
+                        filename: 'not_used',
+                        dir2name: 'not_used')
 
     template_output = "These aren't the droids we're looking for.\n"
 
@@ -28,9 +28,9 @@ describe HdfsUtils::Template do
 
   it 'should print droids and business' do
     dirname = '/user/testuser/testdir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: 'not_used',
-                     dir2name: 'not_used')
+    common_spec_webmock(dirname: dirname,
+                        filename: 'not_used',
+                        dir2name: 'not_used')
 
     template_output = "These aren't the droids we're looking for.\n" \
                       "You can go about your business.\n"
@@ -42,9 +42,9 @@ describe HdfsUtils::Template do
 
   it 'should print droids and business and movealong' do
     dirname = '/user/testuser/testdir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: 'not_used',
-                     dir2name: 'not_used')
+    common_spec_webmock(dirname: dirname,
+                        filename: 'not_used',
+                        dir2name: 'not_used')
 
     template_output = "These aren't the droids we're looking for.\n" \
                       "You can go about your business.\n" \
@@ -57,9 +57,9 @@ describe HdfsUtils::Template do
 
   it 'should print droids and movealong' do
     dirname = '/user/testuser/testdir'
-    hls_spec_webmock(dirname: dirname,
-                     filename: 'not_used',
-                     dir2name: 'not_used')
+    common_spec_webmock(dirname: dirname,
+                        filename: 'not_used',
+                        dir2name: 'not_used')
 
     template_output = "These aren't the droids we're looking for.\n" \
                       "Move along... move along.\n"

@@ -6,9 +6,12 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
+#
+# Options for the ls utility.
+#
 module LsOptions
   #
-  # This procedure provides options that are specific to the utility.
+  # This procedure provides options that are specific to this utility.
   #
   def util_opts
     lambda do |opts, settings|

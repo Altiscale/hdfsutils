@@ -1,5 +1,5 @@
 #
-# Library: hls_spec_webmock.rb
+# Library: common_spec_webmock.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -8,8 +8,11 @@
 # Provides webmock resources for testing hls.
 #
 
-module HlsSpecWebmock
-  def hls_spec_webmock(options)
+#
+# webmocks common to multiple tests.
+#
+module CommonSpecWebmock
+  def common_spec_webmock(options)
     root_stat
     dir_stat
     file_stat(options[:filename])
