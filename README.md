@@ -84,6 +84,7 @@ ruby-2.0.0-p353 - #gemset created /Users/chaiken/.rvm/gems/ruby-2.0.0-p353@hdfsu
 ruby-2.0.0-p353 - #generating hdfsutils-devel wrappers..........
 Using /Users/chaiken/.rvm/gems/ruby-2.0.0-p353 with gemset hdfsutils-devel
 ```
+```
 bash-3.2$ bundle install
 Fetching gem metadata from https://rubygems.org/............
 Fetching version metadata from https://rubygems.org/..
@@ -91,6 +92,8 @@ Resolving dependencies...
 <installs the development dependencies in hdfsutils.gemspec>
 Bundle complete! <D> Gemfile dependencies, <G> gems now installed.
 Use `bundle show [gemname]` to see where a bundled gem is installed.
+```
+```
 bash-3.2$ rake
 Running RuboCop...
 Inspecting <F> files
