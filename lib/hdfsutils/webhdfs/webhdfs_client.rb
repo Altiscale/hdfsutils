@@ -24,10 +24,10 @@ module HdfsUtils
     end
 
     def start
-      @logger.info("starting webhdfs client")
-      @logger.info("  host: " + @settings[:host])
-      @logger.info("  port: " + @settings[:port])
-      @logger.info("  username: " + @settings[:username])
+      @logger.info('starting webhdfs client')
+      @logger.info('  host: ' + @settings[:host])
+      @logger.info('  port: ' + @settings[:port])
+      @logger.info('  username: ' + @settings[:username])
 
       @client = WebHDFS::Client.new(@settings[:host],
                                     @settings[:port],
@@ -38,8 +38,10 @@ module HdfsUtils
 
       check_kerberos
       @client
-    rescue Exception => ex
-      raise "failed to start webhdfs client: #{ex.message}"
+    rescue
+      raise 'failed to start webhdfs client [' +
+            @settings[:host] + ':' + @settings[:port] + ']: ' +
+            $!.message
     end
 
     private
@@ -59,7 +61,7 @@ module HdfsUtils
         @kerberos = true
         retry
       rescue WebHDFS::KerberosError => ex
-        fail "kerberos Error: #{ex.message}"
+        raise "kerberos Error: #{ex.message}"
       end
       @kerberos
     end

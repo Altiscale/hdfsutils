@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
-# Executable: hls
+# Executable: htemplate
 #
-# HDFS ls command
+# Template command for writing a new utility.
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -10,7 +10,7 @@
 #
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib/hdfsutils'))
-require 'utils/hls/ls'
+require 'utils/htemplate/template'
 
-HdfsUtils::Ls.new('hls', ARGV).run
+HdfsUtils::Template.new('htemplate', ARGV).run
 exit 0

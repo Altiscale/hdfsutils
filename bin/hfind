@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
-# Executable: hls
+# Executable: hfind
 #
-# HDFS ls command
+# HDFS find command
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -10,7 +10,7 @@
 #
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib/hdfsutils'))
-require 'utils/hls/ls'
+require 'utils/hfind/find'
 
-HdfsUtils::Ls.new('hls', ARGV).run
+HdfsUtils::Find.new('hfind', ARGV).run
 exit 0

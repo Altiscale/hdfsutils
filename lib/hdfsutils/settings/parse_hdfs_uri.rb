@@ -16,10 +16,10 @@ require 'uri'
 class ParseHdfsURI
   public
 
-  def initialize(default_port=50070)
+  def initialize(default_port = 50_070)
     @default_port = default_port
   end
-  
+
   def parse(hdfs_uri)
     uri = parse_standard_uri(hdfs_uri)
     return uri if uri

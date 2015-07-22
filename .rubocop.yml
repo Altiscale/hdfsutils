@@ -1,0 +1,36 @@
+AllCops:
+  Exclude:
+  - '**/*~' # exclude emacs autosave files
+
+# rubocop's restrictions sometimes make code harder to read
+Style/MultilineOperationIndentation:
+  Enabled: false
+  
+# useless check
+Metrics/AbcSize:
+  Enabled: false
+
+# useless check
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+# 24 lines of text would fit on a vt100 terminal, so it seems
+# like an okay maximum almost 40 years later.
+Metrics/MethodLength:
+  Max: 24
+
+# useless check
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# It is worth turning on this cop every now and then, but it often
+# flags lines that are much easier to read when using + to concatenate.
+# The autocorrect function for this cop broke some of the hdfsutil code
+# in rubocop version 0.28.0.
+Style/LineEndConcatenation:
+  Enabled: false
+
+# In rubocop version 0.28.0, this cop replaces $! with $ERROR_INFO,
+# which breaks the functionality of the utilities.
+Style/SpecialGlobalVars:
+  Enabled: false

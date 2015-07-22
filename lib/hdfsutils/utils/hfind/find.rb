@@ -1,5 +1,5 @@
 #
-# Utility: hls.rb
+# Utility: find.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -7,14 +7,15 @@
 #
 
 require 'utils/util'
-require 'utils/hls/options'
-require 'utils/hls/implementation'
+require 'utils/hfind/options'
+require 'utils/hfind/implementation'
 
 module HdfsUtils
   #
-  # This class runs the ls command for HDFS.
+  # This class runs the find command for HDFS.
+  # It is intended to provide a generic pattern for all utilities.
   #
-  class Ls < Util
+  class Find < Util
     public
 
     #
@@ -33,16 +34,14 @@ module HdfsUtils
     # Run the utility.
     #
     def run
-      @args.each do |path|
-        ls(path)
-      end
+      find
     rescue # never send a stack trace to the user (except when debugging)
       @settings.fatal.die(Fatal::BADRUN, $!)
     end
 
     private
 
-    include LsOptions # provides options that are specific to ls
-    include LsImplementation # implements ls
+    include FindOptions # provides options that are specific to find
+    include FindImplementation # implements find
   end
 end

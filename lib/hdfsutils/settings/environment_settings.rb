@@ -7,10 +7,12 @@
 #
 
 require 'fatal'
+require 'settings/parse_hdfs_uri'
 
 module HdfsUtils
   #
-  # This class provides configuration information from the execution environment.
+  # This class provides configuration information from the
+  # execution environment (typically the shell environment).
   #
   class EnvironmentSettings
     public
@@ -83,17 +85,12 @@ module HdfsUtils
 
       varname = ENV['HDFS_URI'] ? 'HDFS_URI' : 'HDFS_URL'
 
-      if ENV['HDFS_HOST']
-        fail "HDFS_HOST and #{varname} #{ERRMSG}"
-      end
-
-      if ENV['HDFS_PORT']
-        fail "HDFS_PORT and #{varname} #{ERRMSG}"
-      end
+      fail "HDFS_HOST and #{varname} #{ERRMSG}" if ENV['HDFS_HOST']
+      fail "HDFS_PORT and #{varname} #{ERRMSG}" if ENV['HDFS_PORT']
 
       uri = ParseHdfsURI.new.parse(env_uri)
       @settings[:host] = uri.host
-      @settings[:port] = uri.port
+      @settings[:port] = uri.port.to_s
       @settings[:user] = uri.userinfo
     end
   end

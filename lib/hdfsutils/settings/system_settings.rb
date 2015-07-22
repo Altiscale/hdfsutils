@@ -8,7 +8,8 @@
 
 module HdfsUtils
   #
-  # This class provides configuration information from the execution environment.
+  # This class provides configuration information from the
+  # local systems Hadoop configuration files.
   #
   class SystemSettings
     public
