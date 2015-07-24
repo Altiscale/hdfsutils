@@ -69,12 +69,12 @@ To add new functionality to an existing utility, you'll probably want to edit th
 To develop a completely new utility: find, copy, and modify the template code.  Here's the current list of template code files at the time that this documentation was written:
 ```
 $ find . -path '*template*'
-./bin/htemplate
-./lib/hdfsutils/utils/htemplate
-./lib/hdfsutils/utils/htemplate/implementation.rb
-./lib/hdfsutils/utils/htemplate/options.rb
-./lib/hdfsutils/utils/htemplate/template.rb
-./spec/utils/htemplate_spec.rb
+./bin/hdtemplate
+./lib/hdfsutils/utils/hdtemplate
+./lib/hdfsutils/utils/hdtemplate/implementation.rb
+./lib/hdfsutils/utils/hdtemplate/options.rb
+./lib/hdfsutils/utils/hdtemplate/template.rb
+./spec/utils/hdtemplate_spec.rb
 ```
 
 The code in all pull requests must pass the rubocop and rspec tests.  New functionality should be submitted with corresponding rspec unit tests.  The best way to run rubocop and rspec is to use [rvm](http://rvm.io/), [bundler](http://bundler.io), and [rake](https://rubygems.org/gems/rake).  Assuming that rvm is already installed with bundler in the default gemset, run rake as follows:

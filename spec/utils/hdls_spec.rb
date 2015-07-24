@@ -1,5 +1,5 @@
 #
-# Test: hls_spec.rb
+# Test: hdls_spec.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -8,7 +8,7 @@
 
 require_relative '../spec_helper'
 require_relative 'common_spec_webmock'
-require 'utils/hls/ls'
+require 'utils/hdls/ls'
 
 describe HdfsUtils::Ls do
   include CommonSpecWebmock
@@ -24,7 +24,7 @@ describe HdfsUtils::Ls do
                 dirname + "\n"
 
     expect do
-      HdfsUtils::Ls.new('hls',
+      HdfsUtils::Ls.new('hdls',
                         ['--log-level', 'dEbUg',
                          '-ld',
                          dirname]).run
@@ -43,7 +43,7 @@ describe HdfsUtils::Ls do
                 dir2name + "\n"
 
     expect do
-      HdfsUtils::Ls.new('hls', [dirname]).run
+      HdfsUtils::Ls.new('hdls', [dirname]).run
     end.to output(ls_output).to_stdout
   end
 
@@ -63,7 +63,7 @@ describe HdfsUtils::Ls do
                 dir2name + "\n"
 
     expect do
-      HdfsUtils::Ls.new('hls',
+      HdfsUtils::Ls.new('hdls',
                         ['-l',
                          '--log-level', 'warn',
                          dirname]).run
@@ -89,7 +89,7 @@ describe HdfsUtils::Ls do
                 file3name + "\n"
 
     expect do
-      HdfsUtils::Ls.new('hls',
+      HdfsUtils::Ls.new('hdls',
                         ['-R',
                          dirname,
                          '--log-level', 'fatal']).run
@@ -123,7 +123,7 @@ describe HdfsUtils::Ls do
                 file3name + "\n"
 
     expect do
-      HdfsUtils::Ls.new('hls',
+      HdfsUtils::Ls.new('hdls',
                         ['-lR',
                          '--log-level', 'info',
                          dirname]).run

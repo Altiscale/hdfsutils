@@ -1,5 +1,5 @@
 #
-# Utility: hls.rb
+# Utility: hdls.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -7,8 +7,8 @@
 #
 
 require 'utils/util'
-require 'utils/hls/options'
-require 'utils/hls/implementation'
+require 'utils/hdls/options'
+require 'utils/hdls/implementation'
 
 module HdfsUtils
   #

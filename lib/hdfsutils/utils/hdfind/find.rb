@@ -7,8 +7,8 @@
 #
 
 require 'utils/util'
-require 'utils/hfind/options'
-require 'utils/hfind/implementation'
+require 'utils/hdfind/options'
+require 'utils/hdfind/implementation'
 
 module HdfsUtils
   #
