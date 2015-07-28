@@ -1,5 +1,5 @@
 #
-# Test: htemplate_spec.rb
+# Test: hdtemplate_spec.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -8,7 +8,7 @@
 
 require_relative '../spec_helper'
 require_relative 'common_spec_webmock'
-require 'utils/htemplate/template'
+require 'utils/hdtemplate/template'
 
 describe HdfsUtils::Template do
   include CommonSpecWebmock
@@ -22,7 +22,7 @@ describe HdfsUtils::Template do
     template_output = "These aren't the droids we're looking for.\n"
 
     expect do
-      HdfsUtils::Template.new('htemplate', []).run
+      HdfsUtils::Template.new('hdtemplate', []).run
     end.to output(template_output).to_stdout
   end
 
@@ -36,7 +36,7 @@ describe HdfsUtils::Template do
                       "You can go about your business.\n"
 
     expect do
-      HdfsUtils::Template.new('htemplate', ['--business']).run
+      HdfsUtils::Template.new('hdtemplate', ['--business']).run
     end.to output(template_output).to_stdout
   end
 
@@ -51,7 +51,7 @@ describe HdfsUtils::Template do
                       "Move along... move along.\n"
 
     expect do
-      HdfsUtils::Template.new('htemplate', ['-m', '--business']).run
+      HdfsUtils::Template.new('hdtemplate', ['-m', '--business']).run
     end.to output(template_output).to_stdout
   end
 
@@ -65,7 +65,7 @@ describe HdfsUtils::Template do
                       "Move along... move along.\n"
 
     expect do
-      HdfsUtils::Template.new('htemplate', ['--movealong']).run
+      HdfsUtils::Template.new('hdtemplate', ['--movealong']).run
     end.to output(template_output).to_stdout
   end
 end

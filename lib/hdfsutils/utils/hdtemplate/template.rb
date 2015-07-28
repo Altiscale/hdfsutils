@@ -7,8 +7,8 @@
 #
 
 require 'utils/util'
-require 'utils/htemplate/options'
-require 'utils/htemplate/implementation'
+require 'utils/hdtemplate/options'
+require 'utils/hdtemplate/implementation'
 
 module HdfsUtils
   #
