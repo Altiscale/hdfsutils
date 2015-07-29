@@ -25,7 +25,7 @@ module HdfsUtils
     def initialize(name, argv, optsproc = nil)
       @name = name
       @args = argv
-      @settings = Settings.new.run(argv, optsproc)
+      @settings = Settings.new(@name).run(argv, optsproc)
       @args = argv
       @client = WebhdfsClient.new(@settings).start
     end
