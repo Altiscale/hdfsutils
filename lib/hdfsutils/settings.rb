@@ -23,7 +23,7 @@ module HdfsUtils
     def initialize(name)
       @name = name
       @settings = OpenStruct.new
-      @settings.fatal = Fatal.new(name) # initialize as soon as possible
+      @settings.fatal = Fatal.new(@name) # initialize as soon as possible
     end
 
     def run(argv, optsproc)

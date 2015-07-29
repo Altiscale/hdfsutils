@@ -80,4 +80,26 @@ describe HdfsUtils::Find do
       HdfsUtils::Find.new('find', [dirname, '-mtime', '-10d']).run
     end.to output(find_output).to_stdout
   end
+
+  it 'should handle size and print a file in long format' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = '-rwxrwxr-x   3 testuser users ' +
+                  ' 379334628 2015-05-15 22:28 ' +
+                  subdir  + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-size', '+300M', '-ls']).run
+    end.to output(find_output).to_stdout
+  end
 end

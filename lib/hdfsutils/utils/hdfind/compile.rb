@@ -28,7 +28,10 @@ module FindCompile
 
   def findterms
     { atime: access_time,
-      mtime: modification_time
+      ls:    ls,
+      mtime: modification_time,
+      print: print,
+      size:  size
     }
   end
 
@@ -74,6 +77,24 @@ module FindCompile
     end
   end
 
+  def print
+    lambda do |_term|
+      lambda do |path, _stat, _depth|
+        puts path
+        true
+      end
+    end
+  end
+
+  def ls
+    lambda do |_term|
+      lambda do |path, stat, _depth|
+        @sp.run(stat, path)
+        true
+      end
+    end
+  end
+
   def modification_time
     lambda do |term|
       op, num, unitmsec = parse_time(term[1])
@@ -82,6 +103,19 @@ module FindCompile
         return false if modtime.nil? || (modtime == 0)
         # assumes that modificationTime is less than the current time
         compare_time(modtime, @nowmsec, op, num, unitmsec)
+      end
+    end
+  end
+
+  def size
+    lambda do |term|
+      op, num, unitsize = parse_numeric(term[1])
+      lambda do |_path, stat, _depth|
+        # TODO: use CONTENTSUMMARY for directory
+        # In the meantime, directories should never print because length == 0
+        # in the stat object.
+        return false if stat['type'] == 'DIRECTORY'
+        compare_generic(stat['length'], op, num, unitsize)
       end
     end
   end
@@ -106,18 +140,43 @@ module FindCompile
     # calculate the difference in milliseconds
     diffmsec = latermsec - earliermsec
 
-    # get the difference in the appropriate unit, rounded up.
+    compare_generic(diffmsec, op, num, unitmsec)
+  end
+
+  UNIT_TO_BYTES = {
+    'c' => 2**0,
+    'k' => 2**10,
+    'M' => 2**20,
+    'G' => 2**30,
+    'T' => 2**40,
+    'P' => 2**50,
+    nil => 512
+  }
+
+  def parse_numeric(value)
+    md = /\A(?<op>[\-\+]{0,1})(?<num>\d+)(?<unit>[ckMGTP]{0,1})\z/.match(value)
+    fail "#{value}: invalid numeric value" unless md
+    [md['op'], md['num'].to_i, UNIT_TO_BYTES[md['unit']]]
+  end
+
+  #
+  # compare_generic implements the find semantics for comparison:
+  #   1. Round up to the desired unit.
+  #   2. Compare based on the given operator.
+  #
+  def compare_generic(value, op, num, unitsize)
+    # get the value in the appropriate unit, rounded up.
     # divmod returns [quotient, modulus]  (An efficient implementation
     # of divmod uses a single CPU operation to return both quantities.)
-    divmod = diffmsec.divmod(unitmsec)
-    diff = divmod[0] # difference in the appropriate unit
-    diff += 1 unless divmod[1] == 0 # round up, if necessary
+    divmod = value.divmod(unitsize)
+    unitval = divmod[0] # value in the appropriate unit
+    unitval += 1 unless divmod[1] == 0 # round up, if necessary
 
     # do the comparison to generate the return value of this function
     case op
-    when '-' then diff < num
-    when '+' then diff > num
-    else          diff == num # defaults to exact
+    when '-' then unitval < num
+    when '+' then unitval > num
+    else          unitval == num # defaults to exact
     end
   end
 end

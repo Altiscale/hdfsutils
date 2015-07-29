@@ -19,24 +19,25 @@ module FindImplementation
   #
   def find
     compile_init
-    predicate = compile(@findexp)
+    compiled = compile(@findexp)
+    @sp = HdfsUtils::OutputStat.new(@settings)
     @args.each do |path|
       stat = @client.stat(path)
-      find_path(stat, path, predicate, 0)
+      find_path(stat, path, compiled, 0)
     end
   end
 
-  def find_path(stat, path, predicate, depth)
-    puts path if predicate.call(path, stat, depth)
-    find_dir(path, predicate, depth) if stat['type'] == 'DIRECTORY'
+  def find_path(stat, path, compiled, depth)
+    compiled.call(path, stat, depth)
+    find_dir(path, compiled, depth) if stat['type'] == 'DIRECTORY'
   end
 
-  def find_dir(path, predicate, depth)
+  def find_dir(path, compiled, depth)
     list = @client.list(path)
     fail "list operation failed for #{path}" unless list && (list.is_a? Array)
     list.each do |stat|
       suffix = stat['pathSuffix']
-      find_path(stat, path + '/' + suffix, predicate, depth + 1)
+      find_path(stat, path + '/' + suffix, compiled, depth + 1)
     end
   end
 end

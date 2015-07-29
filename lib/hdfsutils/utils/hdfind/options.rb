@@ -63,9 +63,18 @@ module FindOptions
        value:       '[pattern]',
        description: 'Path matches pattern.'
      },
+     { option:      :print,
+       flag:        '-print',
+       description: 'Print the pathname.'
+     },
+     { option:      :ls,
+       flag:        '-ls',
+       description: 'Print ls-style information.'
+     },
      { option:      :size,
        flag:        '-size',
        value:       'n[ckMGTP]',
+       validate: validate_numeric,
        description: 'File size.'
      }
     ]
@@ -102,6 +111,7 @@ module FindOptions
       findopt = @optshash[@argv[index]]
       index += findopt ? parseopt(findopt, index) : 1
     end
+    default_print # append the default print term, if necessary
     @argv.compact! # removes nil elements removed by parseopt
   end
 
@@ -127,10 +137,34 @@ module FindOptions
     2 # advance index by two
   end
 
+  #
+  # Appends the default print term to the find expression, if necessary.
+  #
+  def default_print
+    cancelprint = {
+      exec: true,
+      ls: true,
+      ok: true,
+      print: true,
+      print0: true
+    }
+    @findexp.each do |term|
+      return if cancelprint[term[0]]
+    end
+    @findexp << [:print]
+  end
+
   def validate_time
     lambda do |timeval|
       return nil if timeval.match(/\A[\-\+]{0,1}\d+[smhdw]{0,1}\z/)
       "#{timeval}: illegal time value"
+    end
+  end
+
+  def validate_numeric
+    lambda do |numval|
+      return nil if numval.match(/\A[\-\+]{0,1}\d+[ckMGTP]{0,1}\z/)
+      "#{numval}: illegal numeric value"
     end
   end
 end
