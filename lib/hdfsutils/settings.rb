@@ -20,9 +20,10 @@ module HdfsUtils
   class Settings
     public
 
-    def initialize
+    def initialize(name)
+      @name = name
       @settings = OpenStruct.new
-      @settings.fatal = Fatal.new # must be initialized as soon as possible
+      @settings.fatal = Fatal.new(name) # initialize as soon as possible
     end
 
     def run(argv, optsproc)
@@ -38,6 +39,8 @@ module HdfsUtils
 
       init_logger
       @settings
+    rescue
+      @settings.fatal.die(Fatal::BADINIT, $!)
     end
 
     private
@@ -52,6 +55,7 @@ module HdfsUtils
     def init_logger
       logger = Logger.new(STDERR)
       logger.level = Logger.const_get(@settings[:log_level].upcase)
+      logger.progname = @name
       @settings[:logger] = logger
       @settings.fatal.logger = logger unless @settings[:log_level] == 'Fatal'
     end

@@ -16,7 +16,121 @@ module FindOptions
   #
   def util_opts
     lambda do |opts, _settings|
-      opts.banner = "Usage: #{@name} [options] [file ...]"
+      opts.banner = banner
+      parse! # process find-specific options that will confuse optparse
+    end
+  end
+
+  def setup_opts(argv)
+    @argv = argv
+    @findopts = findopts
+    @optshash = {}
+    @findopts.each do |findopt| # generate hash from array
+      @optshash[findopt[:flag]] = findopt
+    end
+  end
+
+  #
+  # Returns an array so that options appear in the specified order
+  # in the banner.
+  #
+  # rubocop:disable Metrics/MethodLength
+  def findopts
+    [{ option:      :atime,
+       flag:        '-atime',
+       value:       'n[smhdw]',
+       validate:    validate_time,
+       description: 'Access time.'
+     },
+     { option:      :depth,
+       flag:        '-depth',
+       value:       'n',
+       description: 'Depth relative to the starting point.'
+     },
+     { option:      :mtime,
+       flag:        '-mtime',
+       value:       'n[smhdw]',
+       validate:    validate_time,
+       description: 'Modification time.'
+     },
+     { option:      :name,
+       flag:        '-name',
+       value:       '[pattern]',
+       description: 'Name (last component of the path) matches pattern.'
+     },
+     { option:      :path,
+       flag:        '-path',
+       value:       '[pattern]',
+       description: 'Path matches pattern.'
+     },
+     { option:      :size,
+       flag:        '-size',
+       value:       'n[ckMGTP]',
+       description: 'File size.'
+     }
+    ]
+  end
+  # rubocop:enable Metrics/MethodLength
+
+  def banner
+    # standard banner
+    display = "Usage: #{@name} [options] [path ...] [expression]"
+
+    # indent is one more space than longest summary
+    indent = 1
+    @findopts.each do |findopt|
+      findopt[:summary] = findopt[:flag]
+      findopt[:summary] += ' ' + findopt[:value] if findopt[:value]
+      sumlen = findopt[:summary].length
+      findopt[:sumlen] = sumlen
+      indent = [indent, sumlen + 1].max
+    end
+
+    @findopts.each do |findopt|
+      display << "\n  "
+      display << findopt[:summary]
+      display << ' ' * (indent - findopt[:sumlen])
+      display << findopt[:description]
+    end
+    display
+  end
+
+  def parse!
+    index = 0
+    length = @argv.length
+    while index < length
+      findopt = @optshash[@argv[index]]
+      index += findopt ? parseopt(findopt, index) : 1
+    end
+    @argv.compact! # removes nil elements removed by parseopt
+  end
+
+  #
+  # Parses option at index in argv and returns new index.
+  #
+  def parseopt(findopt, index)
+    @argv[index] = nil # strip option out of argv
+    unless findopt[:value] # does not require a value
+      @findexp << [findopt[:option]] # singleton token
+      return 1 # advance index by one
+    end
+
+    # option requires a value
+    value = @argv[index + 1]
+    @argv[index + 1] = nil
+    fail "#{findopt[:flag]}: requires additional arguments" unless value
+    if findopt[:validate]
+      error = findopt[:validate].call(value)
+      fail error if error
+    end
+    @findexp << [findopt[:option], value]
+    2 # advance index by two
+  end
+
+  def validate_time
+    lambda do |timeval|
+      return nil if timeval.match(/\A[\-\+]{0,1}\d+[smhdw]{0,1}\z/)
+      "#{timeval}: illegal time value"
     end
   end
 end
