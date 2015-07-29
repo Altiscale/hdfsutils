@@ -38,6 +38,8 @@ module HdfsUtils
 
       init_logger
       @settings
+    rescue
+      @settings.fatal.die(Fatal::BADINIT, $!)
     end
 
     private

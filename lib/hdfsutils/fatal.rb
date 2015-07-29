@@ -29,16 +29,35 @@ module HdfsUtils
     end
 
     def die(exitcode, exception)
-      if @logger
-        if @logger.level == Logger::DEBUG
-          @logger.debug exception
-        else
-          @logger.fatal exception.message
-        end
+      printable = to_printable(exception)
+      unless @logger # print to STDERR and exit immediately
+        STDERR.puts printable
+        exit! exitcode
+      end
+
+      # print at the appropriate logger level and exit immediately
+      if @logger.level == Logger::DEBUG
+        @logger.debug printable
       else
-        STDERR.puts exception
+        @logger.fatal printable
       end
       exit! exitcode
+    end
+
+    private
+
+    def to_printable(exception)
+      if @logger && @logger.level == Logger::DEBUG
+        exception
+      elsif exception.is_a? WebHDFS::ServerError
+        # This exception is accompanied by a HTML blob
+        # that needs to be parsed and summarized.  In the
+        # meantime, summarize generically as follows...
+        'WebHDFS Server Error. ' \
+        'Run with --log-level debug for more information.'
+      else
+        exception.message
+      end
     end
   end
 end

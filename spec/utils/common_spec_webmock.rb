@@ -20,7 +20,9 @@ module CommonSpecWebmock
     dir_list
     if options[:file2name]
       file2_stat(options[:file2name])
-      file3_stat(options[:file3name])
+      file3_stat(options[:file3name],
+                 options[:file3atime],
+                 options[:file3mtime])
       dir2_list
     end
     urls_and_header(options)
@@ -100,7 +102,7 @@ module CommonSpecWebmock
     }
   end
 
-  def file3_stat(filename)
+  def file3_stat(filename, atime, mtime)
     @file3_stat = {
       'accessTime' => 1_435_870_426_079,
       'blockSize' => 268_435_456,
@@ -115,6 +117,16 @@ module CommonSpecWebmock
       'replication' => 3,
       'type' => 'FILE'
     }
+    # rubocop:disable Style/GuardClause
+    if atime
+      @file3_stat['accessTime'] = (atime.tv_sec * 1000) +
+                                  (atime.tv_usec / 1000)
+    end
+    if mtime
+      @file3_stat['modificationTime'] = (mtime.tv_sec * 1000) +
+                                        (mtime.tv_usec / 1000)
+    end
+    # rubocop:enable Style/GuardClause
   end
 
   def dir2_stat(dir2name)
