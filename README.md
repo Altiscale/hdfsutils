@@ -1,12 +1,21 @@
 # HdfsUtils
 
-Ruby gem that provides utilities (ls, find, cat, and others) for
+Ruby gem that provides utilities (ls, find, and eventually others) for
 HDFS (Hadoop Distributed File System).
 
 This gem uses the webhdfs interface, which provides fast, compatible,
 remote access to files and directories stored in HDFS.
 
-## Environment
+## Settings
+
+The precedence order of sources of settings, from lowest to highest, is:
+
+1. Defaults in this repository.
+2. Standard Hadoop configuration files.
+3. Environment variables
+4. Command-line options.
+
+### Environment Variables
 
 The following environment variables may be used to configure the utilities.
 
@@ -36,9 +45,14 @@ The following environment variables may be used to configure the utilities.
     <td>The location of the webhdfs service: <tt>[webhdfs://]hostname[:port]<tt></td>
     <td>webhdfs://localhost:50070</td>
   </tr>
+  <tr>
+    <td><tt>HADOOP_CONF_DIR</tt></td>
+    <td>The directory that contains Hadoop configuration files.</td>
+    <td>/etc/hadoop</td>
+  </tr>
 </table>
 
-## Common Options
+### Common Command-Line Options
 
 All of the utilities take the following options, which override the environment variables when specified.
 

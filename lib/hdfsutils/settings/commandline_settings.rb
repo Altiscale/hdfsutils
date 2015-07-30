@@ -40,7 +40,7 @@ module HdfsUtils
         optsproc.call(opts, @settings) if optsproc
 
         # set up options that are generic for all utilities
-        opts.on('--help', 'Show this help message.') do |_log_level|
+        opts.on('--help', 'Show this help message.') do
           puts opts
           exit! 0
         end
@@ -54,6 +54,9 @@ module HdfsUtils
         opts.on('--log-level LEVEL',
                 "Log level: #{LOG_LEVELS.join(', ')}") do |log_level|
           @settings.log_level = log_level
+        end
+        opts.on('--debug', 'Synonym for --log-level debug')  do
+          @settings.log_level = 'debug'
         end
       end
     end

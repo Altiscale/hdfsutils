@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<configuration>
+        <property>
+            <name>dfs.namenode.rpc-address.master</name>
+            <value>nn-cluster-001.nsdc.altiscale.com:8020</value>
+        </property>
+        <property>
+            <name>dfs.namenode.http-address.master</name>
+            <value>sn-cluster-001.nsdc.altiscale.com:14000</value>
+        </property>
+        <property>
+            <name>dfs.namenode.secondary.http-address</name>
+            <value>nn-cluster-001.nsdc.altiscale.com:50090</value>
+        </property>
+        <property>
+            <name>dfs.namenode.secondary.http-address.master</name>
+            <value>nn-cluster-001.nsdc.altiscale.com:50090</value>
+        </property>
+</configuration>

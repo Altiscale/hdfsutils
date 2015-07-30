@@ -33,10 +33,12 @@ class ParseHdfsURI
   #
   def parse_standard_uri(hdfs_uri)
     uri = URI(hdfs_uri)
-    # TODO: support uri.scheme == 'hdfs'
-    return nil unless uri.scheme == 'webhdfs'
     return nil unless uri.host
-    uri.port = @default_port unless uri.port
+    case uri.scheme
+    when 'webhdfs' then uri.port = @default_port unless uri.port
+    when 'hdfs' then uri.port = @default_port # translate to webhdfs port
+    else return nil
+    end
     uri
   end
 
