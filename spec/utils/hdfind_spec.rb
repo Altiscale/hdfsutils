@@ -37,7 +37,7 @@ describe HdfsUtils::Find do
     end.to output(find_output).to_stdout
   end
 
-  it 'should handle atime and mtime properly' do
+  it 'should implement atime and mtime' do
     dirname = '/user/testuser/another_testdir'
     filename = 'another_test_101'
     dir2name = 'another_sub_dir'
@@ -81,7 +81,7 @@ describe HdfsUtils::Find do
     end.to output(find_output).to_stdout
   end
 
-  it 'should handle size and print a file in long format' do
+  it 'should implement size and print a file in long format' do
     dirname = '/user/testuser/another_testdir'
     filename = 'another_test_101'
     dir2name = 'another_sub_dir'
@@ -100,6 +100,85 @@ describe HdfsUtils::Find do
 
     expect do
       HdfsUtils::Find.new('find', [dirname, '-size', '+300M', '-ls']).run
+    end.to output(find_output).to_stdout
+  end
+
+  it 'should implement name and path' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = '-rwxrwxr-x   3 testuser users ' +
+                  ' 379334628 2015-05-15 22:28 ' +
+                  subdir  + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-name', 'another*103', '-ls']).run
+    end.to output(find_output).to_stdout
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname,
+                                   '-path',
+                                   '*r/t???user/*another?t[es][es]t?103',
+                                   '-ls']).run
+    end.to output(find_output).to_stdout
+  end
+
+  it 'should implement depth' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = dirname + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-depth', '0']).run
+    end.to output(find_output).to_stdout
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-maxdepth', '0']).run
+    end.to output(find_output).to_stdout
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-depth', '-1']).run
+    end.to output(find_output).to_stdout
+
+    find_output = dirname + '/' + filename + "\n" +
+                  subdir + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-depth', '1']).run
+    end.to output(find_output).to_stdout
+
+    find_output = subdir + '/' + file2name + "\n" +
+                  subdir + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-depth', '2']).run
+    end.to output(find_output).to_stdout
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-depth', '+1']).run
+    end.to output(find_output).to_stdout
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-mindepth', '2']).run
     end.to output(find_output).to_stdout
   end
 end

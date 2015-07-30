@@ -45,7 +45,30 @@ module FindOptions
      { option:      :depth,
        flag:        '-depth',
        value:       'n',
+       validate:    validate_number,
        description: 'Depth relative to the starting point.'
+     },
+     { option:      :iname,
+       flag:        '-iname',
+       value:       '[pattern]',
+       description: 'Path matches pattern (case insensitive).'
+     },
+     { option:      :ipath,
+       flag:        '-ipath',
+       value:       '[pattern]',
+       description: 'Path matches pattern (case insensitive).'
+     },
+     { option:      :maxdepth,
+       flag:        '-maxdepth',
+       value:       'n',
+       validate:    validate_nonnegative,
+       description: 'Descend at most n directory levels.'
+     },
+     { option:      :mindepth,
+       flag:        '-mindepth',
+       value:       'n',
+       validate:    validate_nonnegative,
+       description: 'Descend at least n directory levels.'
      },
      { option:      :mtime,
        flag:        '-mtime',
@@ -158,6 +181,20 @@ module FindOptions
     lambda do |timeval|
       return nil if timeval.match(/\A[\-\+]{0,1}\d+[smhdw]{0,1}\z/)
       "#{timeval}: illegal time value"
+    end
+  end
+
+  def validate_number
+    lambda do |number|
+      return nil if number.match(/\A[\-\+]{0,1}\d+\z/)
+      "#{number}: illegal numeric value"
+    end
+  end
+
+  def validate_nonnegative
+    lambda do |nonnegative|
+      return nil if nonnegative.match(/\A[\+]{0,1}\d+\z/)
+      "#{nonnegative}: value must be a non-negative number"
     end
   end
 

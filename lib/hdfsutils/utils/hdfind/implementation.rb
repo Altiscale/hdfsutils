@@ -28,7 +28,8 @@ module FindImplementation
   end
 
   def find_path(stat, path, compiled, depth)
-    compiled.call(path, stat, depth)
+    compiled.call(path, stat, depth) if @mindepth <= depth
+    return if depth >= @maxdepth
     find_dir(path, compiled, depth) if stat['type'] == 'DIRECTORY'
   end
 
