@@ -45,7 +45,36 @@ module FindOptions
      { option:      :depth,
        flag:        '-depth',
        value:       'n',
+       validate:    validate_number,
        description: 'Depth relative to the starting point.'
+     },
+     { option:      :iname,
+       flag:        '-iname',
+       value:       '[pattern]',
+       description: 'Path matches pattern (case insensitive).'
+     },
+     { option:      :ipath,
+       flag:        '-ipath',
+       value:       '[pattern]',
+       description: 'Path matches pattern (case insensitive).'
+     },
+     { option:      :maxdepth,
+       flag:        '-maxdepth',
+       value:       'n',
+       validate:    validate_nonnegative,
+       description: 'Descend at most n directory levels.'
+     },
+     { option:      :mindepth,
+       flag:        '-mindepth',
+       value:       'n',
+       validate:    validate_nonnegative,
+       description: 'Descend at least n directory levels.'
+     },
+     { option:      :minsize,
+       flag:        '-minsize',
+       value:       'n',
+       validate:    validate_unsigned_numeric,
+       description: 'Prunes find expression to objects of a minimum size.'
      },
      { option:      :mtime,
        flag:        '-mtime',
@@ -63,9 +92,18 @@ module FindOptions
        value:       '[pattern]',
        description: 'Path matches pattern.'
      },
+     { option:      :print,
+       flag:        '-print',
+       description: 'Print the pathname.'
+     },
+     { option:      :ls,
+       flag:        '-ls',
+       description: 'Print ls-style information.'
+     },
      { option:      :size,
        flag:        '-size',
        value:       'n[ckMGTP]',
+       validate: validate_numeric,
        description: 'File size.'
      }
     ]
@@ -102,6 +140,7 @@ module FindOptions
       findopt = @optshash[@argv[index]]
       index += findopt ? parseopt(findopt, index) : 1
     end
+    default_print # append the default print term, if necessary
     @argv.compact! # removes nil elements removed by parseopt
   end
 
@@ -127,10 +166,55 @@ module FindOptions
     2 # advance index by two
   end
 
+  #
+  # Appends the default print term to the find expression, if necessary.
+  #
+  def default_print
+    cancelprint = {
+      exec: true,
+      ls: true,
+      ok: true,
+      print: true,
+      print0: true
+    }
+    @findexp.each do |term|
+      return if cancelprint[term[0]]
+    end
+    @findexp << [:print]
+  end
+
   def validate_time
     lambda do |timeval|
       return nil if timeval.match(/\A[\-\+]{0,1}\d+[smhdw]{0,1}\z/)
       "#{timeval}: illegal time value"
+    end
+  end
+
+  def validate_number
+    lambda do |number|
+      return nil if number.match(/\A[\-\+]{0,1}\d+\z/)
+      "#{number}: illegal numeric value"
+    end
+  end
+
+  def validate_nonnegative
+    lambda do |nonnegative|
+      return nil if nonnegative.match(/\A\d+\z/)
+      "#{nonnegative}: value must be a non-negative number"
+    end
+  end
+
+  def validate_numeric
+    lambda do |numval|
+      return nil if numval.match(/\A[\-\+]{0,1}\d+[ckMGTP]{0,1}\z/)
+      "#{numval}: illegal numeric value"
+    end
+  end
+
+  def validate_unsigned_numeric
+    lambda do |numval|
+      return nil if numval.match(/\A\d+[ckMGTP]{0,1}\z/)
+      "#{numval}: illegal unsigned numeric value"
     end
   end
 end

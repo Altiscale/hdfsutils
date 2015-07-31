@@ -24,11 +24,26 @@ module FindCompile
     @findterms = findterms
     @now = Time.new
     @nowmsec = ((@now.tv_sec * SECOND_MSEC) + (@now.tv_usec / MSEC_USEC))
+    @mindepth = 0
+    @maxdepth = 2**31 # virtually infinite when it comes to HDFS filesystem
+    @minsize = 0
+    @contentsum = false
   end
 
   def findterms
-    { atime: access_time,
-      mtime: modification_time
+    { atime:    time_match,
+      depth:    depth,
+      ls:       ls,
+      iname:    path_match,
+      ipath:    path_match,
+      maxdepth: depth_constraint,
+      mindepth: depth_constraint,
+      minsize:  minsize,
+      mtime:    time_match,
+      name:     path_match,
+      path:     path_match,
+      print:    print,
+      size:     size
     }
   end
 
@@ -62,26 +77,82 @@ module FindCompile
     termfun.call(term)
   end
 
-  def access_time
+  def time_match
     lambda do |term|
       op, num, unitmsec = parse_time(term[1])
       lambda do |_path, stat, _depth|
-        accesstime = stat['accessTime']
-        return false if accesstime.nil? || (accesstime == 0)
+        msec = case term[0]
+               when :atime then stat['accessTime']
+               when :mtime then stat['modificationTime']
+               else fail "unknown time match: #{term[0]}"
+               end
+        return false if msec.nil? || (msec == 0)
         # assumes that accessTime is less than the current time
-        compare_time(accesstime, @nowmsec, op, num, unitmsec)
+        compare_time(msec, @nowmsec, op, num, unitmsec)
       end
     end
   end
 
-  def modification_time
+  def depth
     lambda do |term|
-      op, num, unitmsec = parse_time(term[1])
+      op, num = parse_number(term[1])
+      lambda do |_path, _stat, depth|
+        compare_op(op, depth, num)
+      end
+    end
+  end
+
+  def depth_constraint
+    lambda do |term|
+      _op, num = parse_number(term[1])
+      case term[0]
+      when :maxdepth then @maxdepth = num
+      when :mindepth then @mindepth = num
+      else fail "unknown depth constraint: #{term[0]}"
+      end
+      lambda do |_path, _stat, _depth|
+        true
+      end
+    end
+  end
+
+  def minsize
+    lambda do |term|
+      fail "unknown depth constraint: #{term[0]}" unless term[0] == :minsize
+      _op, num, unitsize = parse_numeric(term[1])
+      @minsize = num * unitsize
+      @contentsum = true
       lambda do |_path, stat, _depth|
-        modtime = stat['modificationTime']
-        return false if modtime.nil? || (modtime == 0)
-        # assumes that modificationTime is less than the current time
-        compare_time(modtime, @nowmsec, op, num, unitmsec)
+        stat['length'] >= @minsize
+      end
+    end
+  end
+
+  def print
+    lambda do |_term|
+      lambda do |path, _stat, _depth|
+        puts path
+        true
+      end
+    end
+  end
+
+  def ls
+    lambda do |_term|
+      @contentsum = true
+      lambda do |path, stat, _depth|
+        @sp.run(stat, path)
+        true
+      end
+    end
+  end
+
+  def size
+    lambda do |term|
+      op, num, unitsize = parse_numeric(term[1])
+      @contentsum = true
+      lambda do |_path, stat, _depth|
+        compare_generic(stat['length'], op, num, unitsize)
       end
     end
   end
@@ -93,7 +164,7 @@ module FindCompile
     'h' => HOUR_MSEC,
     'd' => DAY_MSEC,
     'w' => WEEK_MSEC,
-    nil => DAY_MSEC
+    ''  => DAY_MSEC
   }
 
   def parse_time(value)
@@ -106,18 +177,76 @@ module FindCompile
     # calculate the difference in milliseconds
     diffmsec = latermsec - earliermsec
 
-    # get the difference in the appropriate unit, rounded up.
+    compare_generic(diffmsec, op, num, unitmsec)
+  end
+
+  def parse_number(value)
+    md = /\A(?<op>[\-\+]{0,1})(?<num>\d+)\z/.match(value)
+    fail "#{value}: invalid number" unless md
+    [md['op'], md['num'].to_i]
+  end
+
+  UNIT_TO_BYTES = {
+    'c' => 2**0,
+    'k' => 2**10,
+    'M' => 2**20,
+    'G' => 2**30,
+    'T' => 2**40,
+    'P' => 2**50,
+    ''  => 512
+  }
+
+  def parse_numeric(value)
+    md = /\A(?<op>[\-\+]{0,1})(?<num>\d+)(?<unit>[ckMGTP]{0,1})\z/.match(value)
+    fail "#{value}: invalid numeric value" unless md
+    [md['op'], md['num'].to_i, UNIT_TO_BYTES[md['unit']]]
+  end
+
+  #
+  # compare_generic implements the find semantics for comparison:
+  #   1. Round up to the desired unit.
+  #   2. Compare based on the given operator.
+  #
+  def compare_generic(value, op, num, unitsize)
+    # get the value in the appropriate unit, rounded up.
     # divmod returns [quotient, modulus]  (An efficient implementation
     # of divmod uses a single CPU operation to return both quantities.)
-    divmod = diffmsec.divmod(unitmsec)
-    diff = divmod[0] # difference in the appropriate unit
-    diff += 1 unless divmod[1] == 0 # round up, if necessary
+    divmod = value.divmod(unitsize)
+    unitval = divmod[0] # value in the appropriate unit
+    unitval += 1 unless divmod[1] == 0 # round up, if necessary
 
     # do the comparison to generate the return value of this function
+    compare_op(op, unitval, num)
+  end
+
+  def compare_op(op, lval, rval)
     case op
-    when '-' then diff < num
-    when '+' then diff > num
-    else          diff == num # defaults to exact
+    when '-' then lval < rval
+    when '+' then lval > rval
+    else          lval == rval # defaults to exact
+    end
+  end
+
+  def path_match
+    lambda do |term|
+      lambda do |path, _stat, _depth|
+        case term[0]
+        when :path then
+          matchable = path
+          flags = []
+        when :name then
+          matchable = File.basename(path)
+          flags = []
+        when :ipath then
+          matchable = path
+          flags = [File::FNM_CASEFOLD]
+        when :iname then
+          matchable = File.basename(path)
+          flags = [File::FNM_CASEFOLD]
+        else fail "unknown path match term: #{term[0]}"
+        end
+        File.fnmatch(term[1], matchable, *flags)
+      end
     end
   end
 end

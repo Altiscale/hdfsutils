@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<configuration>
+        <property>
+            <name>fs.defaultFS</name>
+            <value>SHOULD_NOT_BE_USED:UNUSED</value>
+        </property>
+</configuration>
