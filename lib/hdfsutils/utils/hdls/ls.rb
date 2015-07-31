@@ -33,6 +33,7 @@ module HdfsUtils
     # Run the utility.
     #
     def run
+      @args = ["/user/#{@settings[:username]}"] if @args.empty?
       @args.each do |path|
         ls(path)
       end

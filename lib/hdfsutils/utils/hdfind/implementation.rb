@@ -21,6 +21,7 @@ module FindImplementation
     compile_init
     compiled = compile(@findexp)
     @sp = HdfsUtils::OutputStat.new(@settings)
+    @args = ["/user/#{@settings[:username]}"] if @args.empty?
     @args.each do |path|
       stat = @client.stat(path)
       find_path(stat, path, compiled, 0)
@@ -47,7 +48,7 @@ module FindImplementation
     fail "list operation failed for #{path}" unless list && (list.is_a? Array)
     list.each do |stat|
       suffix = stat['pathSuffix']
-      find_path(stat, path + '/' + suffix, compiled, depth + 1)
+      find_path(stat, File.join(path, suffix), compiled, depth + 1)
     end
   end
 end

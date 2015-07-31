@@ -54,7 +54,7 @@ module LsImplementation
     subdirs = []
     list.each do |stat|
       suffix = stat['pathSuffix']
-      subdirs << path + '/' + suffix if (stat['type'] == 'DIRECTORY')
+      subdirs << File.join(path, suffix) if (stat['type'] == 'DIRECTORY')
       ls_plain(stat, suffix)
     end
     return unless @settings.recursive
