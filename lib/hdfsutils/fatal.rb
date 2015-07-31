@@ -65,9 +65,9 @@ module HdfsUtils
         # meantime, summarize generically as follows...
         'WebHDFS Server Error. ' \
         'Run with --log-level debug for more information.'
-      elsif exception.message.length > 80
+      elsif exception.message.length > 120
         # Other message that seems too long to display.
-        exception.message[0, 59] + "...\n" +
+        exception.message[0, 119] + "...\n" +
         '(Run with --log-level debug for more information.)'
       else
         exception.message

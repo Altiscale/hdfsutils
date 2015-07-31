@@ -25,13 +25,20 @@ module HdfsUtils
 
     def start
       @logger.info('starting webhdfs client')
-      @logger.info('  host: ' + @settings[:host])
-      @logger.info('  port: ' + @settings[:port])
-      @logger.info('  username: ' + @settings[:username])
+      [:host, :port, :username].each do |k|
+        @logger.info("  #{k}: " + @settings[k])
+      end
+      [:doas, :proxyhost, :proxyport].each do |k|
+        @logger.info("  #{k}: " + @settings[k]) if @settings[k]
+      end
 
       @client = WebHDFS::Client.new(@settings[:host],
                                     @settings[:port],
-                                    @settings[:username])
+                                    @settings[:username],
+                                    @settings[:doas],
+                                    @settings[:proxyhost],
+                                    @settings[:proxyport])
+
       fail 'nil client' unless @client
       @client.open_timeout = @settings[:open_timeout]
       @client.read_timeout = @settings[:read_timeout]

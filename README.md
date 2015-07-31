@@ -46,6 +46,21 @@ The following environment variables may be used to configure the utilities.
     <td>webhdfs://localhost:50070</td>
   </tr>
   <tr>
+    <td><tt>HDFS_DOAS</tt></td>
+    <td>HTTP doas username to use with webhdfs.</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td><tt>HDFS_PROXYHOST</tt></td>
+    <td>HTTP proxy host to use with webhdfs.</td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td><tt>HDFS_PROXYPORT</tt></td>
+    <td>HTTP proxy port to use with webhdfs.</td>
+    <td>none</td>
+  </tr>
+  <tr>
     <td><tt>HADOOP_CONF_DIR</tt></td>
     <td>The directory that contains Hadoop configuration files.</td>
     <td>/etc/hadoop</td>
