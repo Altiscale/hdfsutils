@@ -94,12 +94,29 @@ describe HdfsUtils::Find do
                         file2name: file2name,
                         file3name: file3name)
 
-    find_output = '-rwxrwxr-x   3 testuser users ' +
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  ' 647775896 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  ' 647770084 2015-05-15 21:07 ' +
+                  subdir  + "\n" +
+                  '-rwxrwxr-x   3 testuser users ' +
                   ' 379334628 2015-05-15 22:28 ' +
                   subdir  + '/' + file3name + "\n"
 
     expect do
       HdfsUtils::Find.new('find', [dirname, '-size', '+300M', '-ls']).run
+    end.to output(find_output).to_stdout
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  ' 647775896 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  ' 647770084 2015-05-15 21:07 ' +
+                  subdir  + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-minsize', '500000k', '-ls']).run
     end.to output(find_output).to_stdout
   end
 

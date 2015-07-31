@@ -26,6 +26,8 @@ module FindCompile
     @nowmsec = ((@now.tv_sec * SECOND_MSEC) + (@now.tv_usec / MSEC_USEC))
     @mindepth = 0
     @maxdepth = 2**31 # virtually infinite when it comes to HDFS filesystem
+    @minsize = 0
+    @contentsum = false
   end
 
   def findterms
@@ -36,6 +38,7 @@ module FindCompile
       ipath:    path_match,
       maxdepth: depth_constraint,
       mindepth: depth_constraint,
+      minsize:  minsize,
       mtime:    time_match,
       name:     path_match,
       path:     path_match,
@@ -113,6 +116,18 @@ module FindCompile
     end
   end
 
+  def minsize
+    lambda do |term|
+      fail "unknown depth constraint: #{term[0]}" unless term[0] == :minsize
+      _op, num, unitsize = parse_numeric(term[1])
+      @minsize = num * unitsize
+      @contentsum = true
+      lambda do |_path, stat, _depth|
+        stat['length'] >= @minsize
+      end
+    end
+  end
+
   def print
     lambda do |_term|
       lambda do |path, _stat, _depth|
@@ -124,6 +139,7 @@ module FindCompile
 
   def ls
     lambda do |_term|
+      @contentsum = true
       lambda do |path, stat, _depth|
         @sp.run(stat, path)
         true
@@ -134,11 +150,8 @@ module FindCompile
   def size
     lambda do |term|
       op, num, unitsize = parse_numeric(term[1])
+      @contentsum = true
       lambda do |_path, stat, _depth|
-        # TODO: use CONTENTSUMMARY for directory
-        # In the meantime, directories should never print because length == 0
-        # in the stat object.
-        return false if stat['type'] == 'DIRECTORY'
         compare_generic(stat['length'], op, num, unitsize)
       end
     end
@@ -151,7 +164,7 @@ module FindCompile
     'h' => HOUR_MSEC,
     'd' => DAY_MSEC,
     'w' => WEEK_MSEC,
-    nil => DAY_MSEC
+    ''  => DAY_MSEC
   }
 
   def parse_time(value)
@@ -180,7 +193,7 @@ module FindCompile
     'G' => 2**30,
     'T' => 2**40,
     'P' => 2**50,
-    nil => 512
+    ''  => 512
   }
 
   def parse_numeric(value)

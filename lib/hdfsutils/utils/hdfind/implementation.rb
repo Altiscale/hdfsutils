@@ -28,9 +28,18 @@ module FindImplementation
   end
 
   def find_path(stat, path, compiled, depth)
+    isdir = (stat['type'] == 'DIRECTORY')
+    merge_content_summary(stat, path) if isdir && @contentsum
+    return if isdir && (stat['length'] < @minsize)
     compiled.call(path, stat, depth) if @mindepth <= depth
     return if depth >= @maxdepth
-    find_dir(path, compiled, depth) if stat['type'] == 'DIRECTORY'
+    find_dir(path, compiled, depth) if isdir
+  end
+
+  def merge_content_summary(stat, path)
+    cs = @client.content_summary(path)
+    fail "content summary failed for #{path}" unless cs && (cs.is_a? Hash)
+    stat.merge!(cs)
   end
 
   def find_dir(path, compiled, depth)

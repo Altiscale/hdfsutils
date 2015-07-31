@@ -24,8 +24,12 @@ module CommonSpecWebmock
                  options[:file3atime],
                  options[:file3mtime])
       dir2_list
+      dir2_cs
     end
-    urls_and_header(options)
+    dir_cs
+    header
+    urls(options)
+    more_urls(options)
     setup_environment
     stub_requests(options)
   end
@@ -168,14 +172,53 @@ module CommonSpecWebmock
     }
   end
 
-  def urls_and_header(options)
-    dirname = options[:dirname]
+  def dir_cs
+    size =  @file_stat['length']
+    count = 1
+    if @file2_stat
+      size += @file2_stat['length']
+      count += 1
+    end
+    if @file3_stat
+      size += @file3_stat['length']
+      count += 1
+    end
+    @dir_cs = {
+      'ContentSummary' => {
+        'directoryCount' => 2,
+        'fileCount' => count,
+        'length' => size,
+        'quota' => -1,
+        'spaceConsumed' => size * 3,
+        'spaceQuota' => -1
+      }
+    }
+  end
+
+  def dir2_cs
+    size = @file2_stat['length'] + @file3_stat['length']
+    @dir2_cs = {
+      'ContentSummary' => {
+        'directoryCount' => 1,
+        'fileCount' => 2,
+        'length' => size,
+        'quota' => -1,
+        'spaceConsumed' => size * 3,
+        'spaceQuota' => -1
+      }
+    }
+  end
+
+  def header
     @ctheader = { 'Content-Type' => 'application/json' }
 
     @hostname = 'nn-cluster.nsdc.altiscale.com'
     @port = '50070'
     @username = 'testuser'
+  end
 
+  def urls(options)
+    dirname = options[:dirname]
     @testrooturl = 'http://' + @hostname + ':' + @port +
                    '/webhdfs/v1/?op=GETFILESTATUS&user.name=' +
                    @username
@@ -190,6 +233,13 @@ module CommonSpecWebmock
                    '?op=LISTSTATUS&user.name=' +
                    @username
 
+    @testdircsurl = 'http://' + @hostname + ':' + @port +
+                    '/webhdfs/v1' + dirname +
+                    '?op=GETCONTENTSUMMARY&user.name=' +
+                    @username
+  end
+
+  def more_urls(options)
     return unless options[:file2name]
 
     @testlist2url = 'http://' + @hostname + ':' + @port +
@@ -197,6 +247,12 @@ module CommonSpecWebmock
                     options[:dir2name] +
                     '?op=LISTSTATUS&user.name=' +
                     @username
+
+    @testdir2csurl = 'http://' + @hostname + ':' + @port +
+                     '/webhdfs/v1' + options[:dirname] + '/' +
+                     options[:dir2name] +
+                     '?op=GETCONTENTSUMMARY&user.name=' +
+                     @username
   end
 
   def stub_requests(options)
@@ -208,6 +264,10 @@ module CommonSpecWebmock
       .to_return(body: JSON.generate(@dir_stat),
                  headers: @ctheader)
 
+    stub_request(:get, @testdircsurl)
+      .to_return(body: JSON.generate(@dir_cs),
+                 headers: @ctheader)
+
     stub_request(:get, @testlisturl)
       .to_return(body: JSON.generate(@dir_list),
                  headers: @ctheader)
@@ -216,6 +276,10 @@ module CommonSpecWebmock
 
     stub_request(:get, @testlist2url)
       .to_return(body: JSON.generate(@dir2_list),
+                 headers: @ctheader)
+
+    stub_request(:get, @testdir2csurl)
+      .to_return(body: JSON.generate(@dir2_cs),
                  headers: @ctheader)
   end
 

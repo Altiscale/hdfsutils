@@ -70,6 +70,12 @@ module FindOptions
        validate:    validate_nonnegative,
        description: 'Descend at least n directory levels.'
      },
+     { option:      :minsize,
+       flag:        '-minsize',
+       value:       'n',
+       validate:    validate_unsigned_numeric,
+       description: 'Prunes find expression to objects of a minimum size.'
+     },
      { option:      :mtime,
        flag:        '-mtime',
        value:       'n[smhdw]',
@@ -193,7 +199,7 @@ module FindOptions
 
   def validate_nonnegative
     lambda do |nonnegative|
-      return nil if nonnegative.match(/\A[\+]{0,1}\d+\z/)
+      return nil if nonnegative.match(/\A\d+\z/)
       "#{nonnegative}: value must be a non-negative number"
     end
   end
@@ -202,6 +208,13 @@ module FindOptions
     lambda do |numval|
       return nil if numval.match(/\A[\-\+]{0,1}\d+[ckMGTP]{0,1}\z/)
       "#{numval}: illegal numeric value"
+    end
+  end
+
+  def validate_unsigned_numeric
+    lambda do |numval|
+      return nil if numval.match(/\A\d+[ckMGTP]{0,1}\z/)
+      "#{numval}: illegal unsigned numeric value"
     end
   end
 end
