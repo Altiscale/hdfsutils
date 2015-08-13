@@ -7,6 +7,7 @@
 #
 
 require 'pp'
+require 'units'
 
 module HdfsUtils
   #
@@ -54,7 +55,9 @@ module HdfsUtils
     end
 
     def output_size(stat)
-      sprintf('%10d', stat['length'])
+      s = HdfsUtils::Units.new.format_filesize(stat['length'],
+                                               @settings[:filesizeunits])
+      sprintf('%10s', s)
     end
 
     def output_mtime(stat)

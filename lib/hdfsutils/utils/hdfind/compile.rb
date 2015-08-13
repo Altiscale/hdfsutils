@@ -186,20 +186,8 @@ module FindCompile
     [md['op'], md['num'].to_i]
   end
 
-  UNIT_TO_BYTES = {
-    'c' => 2**0,
-    'k' => 2**10,
-    'M' => 2**20,
-    'G' => 2**30,
-    'T' => 2**40,
-    'P' => 2**50,
-    ''  => 512
-  }
-
   def parse_numeric(value)
-    md = /\A(?<op>[\-\+]{0,1})(?<num>\d+)(?<unit>[ckMGTP]{0,1})\z/.match(value)
-    fail "#{value}: invalid numeric value" unless md
-    [md['op'], md['num'].to_i, UNIT_TO_BYTES[md['unit']]]
+    HdfsUtils::Units.new.parse_filesize(value)
   end
 
   #

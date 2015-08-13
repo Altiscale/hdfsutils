@@ -129,4 +129,39 @@ describe HdfsUtils::Ls do
                          dirname]).run
     end.to output(ls_output).to_stdout
   end
+
+  it 'should support unix units for output' do
+    dirname = '/data'
+    filename = 'first_data_file'
+    dir2name = 'recursion_dir_long'
+    file2name = 'second_data_file'
+    file3name = 'third_data_file'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    ls_output = '-rwxrwxr-x   3 testuser users ' +
+                '     5.67K 2015-05-15 21:04 ' +
+                filename + "\n" +
+                'drwx------   - testuser users ' +
+                '        0B 2015-05-15 21:07 ' +
+                dir2name + "\n" + "\n" +
+                dirname + '/' + dir2name + ':' + "\n" +
+                '-rwxrwxr-x   3 testuser users ' +
+                '      256M 2015-05-15 20:52 ' +
+                file2name + "\n" +
+                '-rwxrwxr-x   3 testuser users ' +
+                '      361M 2015-05-15 22:28 ' +
+                file3name + "\n"
+
+    expect do
+      HdfsUtils::Ls.new('hdls',
+                        ['-lR',
+                         '--log-level', 'debug',
+                         '--filesizeunits', 'unix',
+                         dirname]).run
+    end.to output(ls_output).to_stdout
+  end
 end

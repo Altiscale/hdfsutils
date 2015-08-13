@@ -9,6 +9,7 @@
 require_relative '../spec_helper'
 require_relative 'common_spec_webmock'
 require 'utils/hdfind/find'
+require 'units'
 
 describe HdfsUtils::Find do
   include CommonSpecWebmock
@@ -117,6 +118,129 @@ describe HdfsUtils::Find do
 
     expect do
       HdfsUtils::Find.new('find', [dirname, '-minsize', '500000k', '-ls']).run
+    end.to output(find_output).to_stdout
+  end
+
+  it 'should support unix units for size' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '      617M 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '      617M 2015-05-15 21:07 ' +
+                  subdir  + "\n" +
+                  '-rwxrwxr-x   3 testuser users ' +
+                  '      361M 2015-05-15 22:28 ' +
+                  subdir  + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-size', '+379334627c', '-ls',
+                                   '--filesizeunits', 'unix']).run
+    end.to output(find_output).to_stdout
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '      617M 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '      617M 2015-05-15 21:07 ' +
+                  subdir  + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-minsize', '500000k', '-ls',
+                                   '--filesizeunits', 'unix']).run
+    end.to output(find_output).to_stdout
+  end
+
+  it 'should support SI units for size' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '     647MB 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '     647MB 2015-05-15 21:07 ' +
+                  subdir  + "\n" +
+                  '-rwxrwxr-x   3 testuser users ' +
+                  '     379MB 2015-05-15 22:28 ' +
+                  subdir  + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-size', '+370MB', '-ls',
+                                   '--filesizeunits', 'si']).run
+    end.to output(find_output).to_stdout
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '     647MB 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '     647MB 2015-05-15 21:07 ' +
+                  subdir  + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-minsize', '500000k', '-ls',
+                                   '--filesizeunits', 'si']).run
+    end.to output(find_output).to_stdout
+  end
+
+  it 'should support IEC units for size' do
+    dirname = '/user/testuser/another_testdir'
+    filename = 'another_test_101'
+    dir2name = 'another_sub_dir'
+    subdir = dirname + '/' + dir2name
+    file2name = 'another_test_102'
+    file3name = 'another_test_103'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name,
+                        file2name: file2name,
+                        file3name: file3name)
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '    617MiB 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '    617MiB 2015-05-15 21:07 ' +
+                  subdir  + "\n" +
+                  '-rwxrwxr-x   3 testuser users ' +
+                  '    361MiB 2015-05-15 22:28 ' +
+                  subdir  + '/' + file3name + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-size', '+360MiB', '-ls',
+                                   '--filesizeunits', 'iec']).run
+    end.to output(find_output).to_stdout
+
+    find_output = 'drwxr-xr-x   - testuser users ' +
+                  '    617MiB 2015-05-15 21:03 ' +
+                  dirname + "\n" +
+                  'drwx------   - testuser users ' +
+                  '    617MiB 2015-05-15 21:07 ' +
+                  subdir  + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname, '-minsize', '500000k', '-ls',
+                                   '--filesizeunits', 'iec']).run
     end.to output(find_output).to_stdout
   end
 

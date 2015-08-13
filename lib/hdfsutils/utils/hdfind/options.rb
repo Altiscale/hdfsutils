@@ -6,6 +6,8 @@
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 
+require 'units'
+
 #
 # Options for the find utility.
 #
@@ -206,7 +208,7 @@ module FindOptions
 
   def validate_numeric
     lambda do |numval|
-      return nil if numval.match(/\A[\-\+]{0,1}\d+[ckMGTP]{0,1}\z/)
+      return nil if HdfsUtils::Units::FILESIZE_REGEXP.match(numval)
       "#{numval}: illegal numeric value"
     end
   end
