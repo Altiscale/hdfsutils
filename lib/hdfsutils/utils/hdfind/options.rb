@@ -127,7 +127,7 @@ module FindOptions
     end
 
     @findopts.each do |findopt|
-      display << "\n  "
+      display << "\n    " # align with optparse options
       display << findopt[:summary]
       display << ' ' * (indent - findopt[:sumlen])
       display << findopt[:description]
