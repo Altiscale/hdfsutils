@@ -51,12 +51,18 @@ module LsImplementation
     list = @client.list(path)
 
     fail "list operation failed for #{path}" unless list && (list.is_a? Array)
+    if list.empty?
+      @logger.debug('empty directory: ' + path)
+      return
+    end
     subdirs = []
+    @sp.record(list.length) if @sp
     list.each do |stat|
       suffix = stat['pathSuffix']
       subdirs << File.join(path, suffix) if (stat['type'] == 'DIRECTORY')
       ls_plain(stat, suffix)
     end
+    @sp.play if @sp
     return unless @settings.recursive
     subdirs.each do |subdir|
       puts

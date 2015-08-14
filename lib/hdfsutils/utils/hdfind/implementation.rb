@@ -20,12 +20,13 @@ module FindImplementation
   def find
     compile_init
     compiled = compile(@findexp)
-    @sp = HdfsUtils::OutputStat.new(@settings)
+    @sp = HdfsUtils::OutputStat.new(@settings, batch: 25)
     @args = ["/user/#{@settings[:username]}"] if @args.empty?
     @args.each do |path|
       stat = @client.stat(path)
       find_path(stat, path, compiled, 0)
     end
+    @sp.play
   end
 
   def find_path(stat, path, compiled, depth)

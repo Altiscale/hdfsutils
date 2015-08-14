@@ -115,10 +115,10 @@ describe HdfsUtils::Ls do
                 '         0 2015-05-15 21:07 ' +
                 dir2name + "\n" + "\n" +
                 dirname + '/' + dir2name + ':' + "\n" +
-                '-rwxrwxr-x   3 testuser users ' +
+                '-rwxrwxr-x   3 testuser hiveusers ' +
                 ' 268435456 2015-05-15 20:52 ' +
                 file2name + "\n" +
-                '-rwxrwxr-x   3 testuser users ' +
+                '-rwxrwxr-x   3 testuser users     ' +
                 ' 379334628 2015-05-15 22:28 ' +
                 file3name + "\n"
 
@@ -149,10 +149,10 @@ describe HdfsUtils::Ls do
                 '        0B 2015-05-15 21:07 ' +
                 dir2name + "\n" + "\n" +
                 dirname + '/' + dir2name + ':' + "\n" +
-                '-rwxrwxr-x   3 testuser users ' +
+                '-rwxrwxr-x   3 testuser hiveusers ' +
                 '      256M 2015-05-15 20:52 ' +
                 file2name + "\n" +
-                '-rwxrwxr-x   3 testuser users ' +
+                '-rwxrwxr-x   3 testuser users     ' +
                 '      361M 2015-05-15 22:28 ' +
                 file3name + "\n"
 

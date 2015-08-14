@@ -5,6 +5,34 @@
 # Licensed under the Apache License, Version 2.0
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
+#
+# Support for different filesize unit systems:
+#   'unix' - base 1024 - compatible with ls -h and du -h
+#                      - uses B K M G T P on output
+#                        (but c k M G T P are still supported on input)
+#   'si'   - base 1000 - B kB MB GB TB PB (input and output)
+#   'iec'  - base 1024 - B KiB MiB GiB TiB PiB (input and output)
+#
+# The algorithm for converting from raw byte numbers to units is slightly
+# different from Linux (which itself differs slightly from version to version).
+# In summary:
+# - It computes the largest unit that allows a representation that is lesser
+#   or equal to the raw number: thus 1023 bytes becomes '1023B', not '1.0K'
+#   as on some linux systems.
+# - The numeric portion is never more than 3 characters (for base-1000 systems)
+#   or 4 characters (for base 1024 systems) unless the unit is the maximum
+#   (petabytes, at present) in which case as many characters are used
+#   as needed. Thus, (1000**6) becomes 1000PB.
+# - It uses a decimal point only:
+#   - If there is room for at least one digit after decimal point.
+#     Thus 99_999 becomes 99kB.
+#   - The fractional part is non-zero. Thus (1024**2) becomes 1M.
+# - Like unix systems, it truncates the fractional part, removes trailing
+#   zeroes, preserving only one if immediately after the decimal point.
+#   Thus (1024**2)+1 becomes 1.0M.
+#
+# The behavior is extensively documented by the unit tests.
+#
 
 module HdfsUtils
   #

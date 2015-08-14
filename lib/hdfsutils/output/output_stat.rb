@@ -16,22 +16,83 @@ module HdfsUtils
   class OutputStat
     public
 
-    def initialize(settings)
+    def initialize(settings, options = {})
       @settings = settings
+      @logger = @settings[:logger]
+      @buffer = []
+      @defaultjustification = {
+        owner: 8,
+        group: 5,
+        size: 10
+      }
+      @batch = options[:batch]
+      @record = @batch
+      @justification = @defaultjustification
+    end
+
+    def record(lines)
+      @logger.debug("OutputStat recording #{lines} line(s).")
+      @record = lines
     end
 
     def run(stat, name)
-      output  = output_mode(stat) + ' '
-      output << output_repl(stat) + ' '
-      output << stat['owner'] + ' '
-      output << stat['group'] + ' '
-      output << output_size(stat) + ' '
-      output << output_mtime(stat) + ' '
-      output << name + "\n"
-      puts output
+      play if @record == 0
+      if @record.nil?
+        output_line(to_line(stat, name))
+      else
+        begin
+          @buffer << to_line(stat, name)
+          @record -= 1
+        rescue
+          play # print everything befor the error
+          raise $!
+        end
+      end
+    end
+
+    def play
+      @logger.debug("OutputStat playing #{@buffer.length} line(s).")
+      justify
+      @buffer.each { |line| output_line(line) }
+      @buffer = []
+      @record = @batch
     end
 
     private
+
+    def to_line(stat, name)
+      {
+        mode:  output_mode(stat),
+        repl:  output_repl(stat),
+        owner: stat['owner'] || 'unknown',
+        group: stat['group'] || 'unknown',
+        size:  output_size(stat),
+        mtime: output_mtime(stat),
+        name:  name
+      }
+    end
+
+    def justify
+      [:owner, :group, :size].each do |field|
+        current = @justification[field]
+        @buffer.each do |line|
+          new = line[field].length
+          current = new if current < new
+        end
+        @justification[field] = current
+      end
+    end
+
+    def output_line(line)
+      output  = line[:mode] + ' '
+      output << line[:repl] + ' '
+      output << line[:owner].ljust(@justification[:owner]) + ' '
+      output << line[:group].ljust(@justification[:group]) + ' '
+      output << line[:size].rjust(@justification[:size]) + ' '
+      output << line[:mtime] + ' '
+      output << line[:name]  + "\n"
+      puts output
+    end
 
     def output_mode(stat)
       output = ((stat['type'] == 'DIRECTORY') ? 'd' : '-')
@@ -55,9 +116,8 @@ module HdfsUtils
     end
 
     def output_size(stat)
-      s = HdfsUtils::Units.new.format_filesize(stat['length'],
-                                               @settings[:filesizeunits])
-      sprintf('%10s', s)
+      HdfsUtils::Units.new.format_filesize(stat['length'],
+                                           @settings[:filesizeunits])
     end
 
     def output_mtime(stat)

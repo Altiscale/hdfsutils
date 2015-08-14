@@ -75,7 +75,7 @@ module CommonSpecWebmock
   def file_stat(filename)
     @file_stat = {
       'accessTime' => 1_435_870_426_079,
-      'blockSize' => 268_435_456,
+      'blockSize' => 1_268_435_456,
       'childrenNum' => 0,
       'fileId' => 17_199,
       'group' => 'users',
@@ -95,7 +95,7 @@ module CommonSpecWebmock
       'blockSize' => 268_435_456,
       'childrenNum' => 0,
       'fileId' => 17_200,
-      'group' => 'users',
+      'group' => 'hiveusers',
       'length' => 268_435_456,
       'modificationTime' => 1_431_723_141_592,
       'owner' => 'testuser',
