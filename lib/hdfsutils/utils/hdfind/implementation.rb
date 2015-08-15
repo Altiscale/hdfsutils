@@ -20,10 +20,21 @@ module FindImplementation
   def find
     compile_init
     compiled = compile(@findexp)
-    @sp = HdfsUtils::OutputStat.new(@settings, batch: 25)
+    @sp = HdfsUtils::OutputStat.new(@settings, batch: 1)
     @args = ["/user/#{@settings[:username]}"] if @args.empty?
     @args.each do |path|
-      stat = @client.stat(path)
+      stat = nil
+      begin
+        stat = @client.stat(path)
+      # rubocop:disable Lint/HandleExceptions
+      rescue WebHDFS::FileNotFoundError
+        # fall through, leave stat == nil
+      end
+      # rubocop:enable Lint/HandleExceptions
+      unless stat
+        puts @name + ': ' + path + ': ' + 'No such file or directory'
+        next
+      end
       find_path(stat, path, compiled, 0)
     end
     @sp.play
@@ -32,7 +43,8 @@ module FindImplementation
   def find_path(stat, path, compiled, depth)
     isdir = (stat['type'] == 'DIRECTORY')
     merge_content_summary(stat, path) if isdir && @contentsum
-    return if isdir && (stat['length'] < @minsize)
+    return if stat['length'] < @minsize
+    return if isdir && (stat['length'] < @mindirsize)
     compiled.call(path, stat, depth) if @mindepth <= depth
     return if depth >= @maxdepth
     find_dir(path, compiled, depth) if isdir

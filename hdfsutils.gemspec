@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.3'
   spec.add_development_dependency 'webmock', '~> 1.21'
   spec.add_development_dependency 'rubocop', '0.28.0'
-  spec.add_runtime_dependency 'webhdfs', '~> 0.6.0.2'
+  spec.add_runtime_dependency 'webhdfs', '~> 0.7.0'
   spec.add_runtime_dependency 'gssapi', '~> 1.2'
 end
 

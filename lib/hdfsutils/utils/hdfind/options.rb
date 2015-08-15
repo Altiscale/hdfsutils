@@ -78,6 +78,12 @@ module FindOptions
        validate:    validate_unsigned_numeric,
        description: 'Prunes find expression to objects of a minimum size.'
      },
+     { option:      :mindsize,
+       flag:        '-mindirsize',
+       value:       'n',
+       validate:    validate_unsigned_numeric,
+       description: 'Prunes find expression to directories of a minimum size.'
+     },
      { option:      :mtime,
        flag:        '-mtime',
        value:       'n[smhdw]',

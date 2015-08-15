@@ -91,7 +91,7 @@ module CommonSpecWebmock
 
   def file2_stat(filename)
     @file2_stat = {
-      'accessTime' => 1_435_870_426_079,
+      'accessTime' => 1_435_870_428_982,
       'blockSize' => 268_435_456,
       'childrenNum' => 0,
       'fileId' => 17_200,
@@ -218,7 +218,7 @@ module CommonSpecWebmock
   end
 
   def urls(options)
-    dirname = options[:dirname]
+    dirname = URI.escape(options[:dirname])
     @testrooturl = 'http://' + @hostname + ':' + @port +
                    '/webhdfs/v1/?op=GETFILESTATUS&user.name=' +
                    @username
@@ -255,14 +255,32 @@ module CommonSpecWebmock
                      @username
   end
 
+  def check_unescaped_path(response_stat)
+    lambda do |request|
+      path = request.uri.path.to_s
+      # Verify fix to webhdfs that escapes URI characters.
+      # In webhdfs gem versions 0.6.0 and lower, special
+      # characters in the path were not escaped.  A patch from
+      # Altiscale fixed this issue in versions 0.7.0 and higher.
+      if path.include?('{') || path.include?('}')
+        { body: "ERROR: unescaped character in #{path}",
+          headers: @ctheader
+        }
+      else
+        { body: JSON.generate(response_stat),
+          headers: @ctheader
+        }
+      end
+    end
+  end
+
   def stub_requests(options)
     stub_request(:get, @testrooturl)
       .to_return(body: JSON.generate(@root_stat),
                  headers: @ctheader)
 
     stub_request(:get, @testdirurl)
-      .to_return(body: JSON.generate(@dir_stat),
-                 headers: @ctheader)
+      .to_return(check_unescaped_path(@dir_stat))
 
     stub_request(:get, @testdircsurl)
       .to_return(body: JSON.generate(@dir_cs),

@@ -18,17 +18,28 @@ module LsImplementation
   def ls(path)
     # initialize stat printer, if necessary
     @sp = @settings.long_format ? HdfsUtils::OutputStat.new(@settings) : nil
+    @extended = @sp && @settings.extended
 
-    stat = @client.stat(path)
-    # TODO: check possible error returns from @client.stat
+    stat = nil
+    begin
+      stat = @client.stat(path)
+    # rubocop:disable Lint/HandleExceptions
+    rescue WebHDFS::FileNotFoundError
+      # fall through, leave stat = nil
+    end
+    # rubocop:enable Lint/HandleExceptions
     unless stat
       puts @name + ': ' + path + ': ' + 'No such file or directory'
       return
     end
-    if (stat['type'] == 'DIRECTORY') && !@settings.dir_plain
-      @logger.debug("listing directory #{path}")
-      ls_dir(path)
-      return
+    if (stat['type'] == 'DIRECTORY')
+      if @settings.dir_plain
+        merge_content_summary(stat, path)
+      else
+        @logger.debug("listing directory #{path}")
+        ls_dir(path)
+        return
+      end
     end
     ls_plain(stat, path)
   end
@@ -59,7 +70,11 @@ module LsImplementation
     @sp.record(list.length) if @sp
     list.each do |stat|
       suffix = stat['pathSuffix']
-      subdirs << File.join(path, suffix) if (stat['type'] == 'DIRECTORY')
+      if (stat['type'] == 'DIRECTORY')
+        subdir = File.join(path, suffix)
+        subdirs << subdir
+        merge_content_summary(stat, subdir) if @extended
+      end
       ls_plain(stat, suffix)
     end
     @sp.play if @sp
@@ -69,5 +84,11 @@ module LsImplementation
       puts subdir + ':'
       ls_dir(subdir)
     end
+  end
+
+  def merge_content_summary(stat, path)
+    cs = @client.content_summary(path)
+    fail "content summary failed for #{path}" unless cs && (cs.is_a? Hash)
+    stat.merge!(cs)
   end
 end

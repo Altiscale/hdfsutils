@@ -300,6 +300,21 @@ describe HdfsUtils::Find do
       HdfsUtils::Find.new('find', [dirname, '-depth', '-1']).run
     end.to output(find_output).to_stdout
 
+    # Providing a minimum directory size between the size of
+    # the top directory (dirname) and the next level directory
+    # (dir2name) should result two lines of output:
+    # - the top directory
+    # - the file in the top directory
+    # The next level directory and the files that are the
+    # next level down should be ignored.
+    find_output = dirname + "\n" + File.join(dirname, filename) + "\n"
+
+    expect do
+      HdfsUtils::Find.new('find', [dirname,
+                                   '-mindirsize',
+                                   '647775800c']).run
+    end.to output(find_output).to_stdout
+
     find_output = dirname + '/' + filename + "\n" +
                   subdir + "\n"
 

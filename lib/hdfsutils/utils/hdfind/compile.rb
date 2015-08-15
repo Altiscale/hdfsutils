@@ -27,6 +27,7 @@ module FindCompile
     @mindepth = 0
     @maxdepth = 2**31 # virtually infinite when it comes to HDFS filesystem
     @minsize = 0
+    @mindirsize = 0
     @contentsum = false
   end
 
@@ -38,7 +39,8 @@ module FindCompile
       ipath:    path_match,
       maxdepth: depth_constraint,
       mindepth: depth_constraint,
-      minsize:  minsize,
+      minsize:  size_constraint,
+      mindsize: size_constraint,
       mtime:    time_match,
       name:     path_match,
       path:     path_match,
@@ -116,14 +118,20 @@ module FindCompile
     end
   end
 
-  def minsize
+  def size_constraint
     lambda do |term|
-      fail "unknown depth constraint: #{term[0]}" unless term[0] == :minsize
       _op, num, unitsize = parse_numeric(term[1])
-      @minsize = num * unitsize
+      case term[0]
+      when :minsize  then @minsize = num * unitsize
+      when :mindsize then @mindirsize = num * unitsize
+      else
+        fail "unknown size constraint: #{term[0]}"
+      end
       @contentsum = true
-      lambda do |_path, stat, _depth|
-        stat['length'] >= @minsize
+      lambda do |_path, _stat, _depth|
+        # As is true for maxdepth and mindepth, the check
+        # for minsize is done outside of the expression
+        true
       end
     end
   end
