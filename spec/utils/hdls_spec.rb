@@ -47,6 +47,21 @@ describe HdfsUtils::Ls do
     end.to output(ls_output).to_stdout
   end
 
+  it 'should output an error for a file that does not exist' do
+    dirname = '/dir1'
+    filename = 'fn1'
+    dir2name = 'dir2'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name)
+
+    ls_output = "hdls: /nosuchdir/nosuchfile: No such file or directory\n"
+
+    expect do
+      HdfsUtils::Ls.new('hdls', ['/nosuchdir/nosuchfile']).run
+    end.to output(ls_output).to_stdout
+  end
+
   it 'should ls a directory in long format' do
     dirname = '/user/testuser/yetanotherdir'
     filename = 'another_filename'

@@ -273,6 +273,21 @@ describe HdfsUtils::Find do
     end.to output(find_output).to_stdout
   end
 
+  it 'should output an error for a file that does not exist' do
+    dirname = '/dir1'
+    filename = 'fn1'
+    dir2name = 'dir2'
+    common_spec_webmock(dirname: dirname,
+                        filename: filename,
+                        dir2name: dir2name)
+
+    ls_output = "hdfind: /nosuchdir/nosuchfile: No such file or directory\n"
+
+    expect do
+      HdfsUtils::Find.new('hdfind', ['/nosuchdir/nosuchfile']).run
+    end.to output(ls_output).to_stdout
+  end
+
   it 'should implement depth' do
     dirname = '/user/testuser/another_testdir'
     filename = 'another_test_101'

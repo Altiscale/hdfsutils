@@ -32,6 +32,7 @@ module CommonSpecWebmock
     more_urls(options)
     setup_environment
     stub_requests(options)
+    stub_404_request
   end
 
   def root_stat
@@ -299,6 +300,15 @@ module CommonSpecWebmock
     stub_request(:get, @testdir2csurl)
       .to_return(body: JSON.generate(@dir2_cs),
                  headers: @ctheader)
+  end
+
+  def stub_404_request
+    test404url = 'http://' + @hostname + ':' + @port +
+                 '/webhdfs/v1/nosuchdir/nosuchfile' +
+                 '?op=GETFILESTATUS&user.name=' +
+                 @username
+
+    stub_request(:get, test404url).to_return(status: 404)
   end
 
   def setup_environment
