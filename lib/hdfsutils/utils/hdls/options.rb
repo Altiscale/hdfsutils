@@ -16,6 +16,9 @@ module LsOptions
   def util_opts
     lambda do |opts, settings|
       opts.banner = "Usage: #{@name} [options] [file ...]"
+      opts.on('-@', 'Extended info (e.g. directory sizes) in long output.') do
+        settings.extended = true
+      end
       opts.on('-d',
               'Directories are listed as plain files ' \
               '(not searched recursively).') do
@@ -26,6 +29,9 @@ module LsOptions
       end
       opts.on('-R', 'Recursively list subdirectories encountered.') do
         settings.recursive = true
+      end
+      opts.on('-u', 'Use time of last access, instead of last modification.') do
+        settings.access_time = true
       end
     end
   end

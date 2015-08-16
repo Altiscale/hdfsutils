@@ -140,3 +140,12 @@ HdfsUtils::Template
 Finished in <N> seconds (files took <M> seconds to load)
 <X> examples, <F> failures
 ```
+
+## Authors
+
+- David Chaiken (chaiken@altiscale.com)
+- Max Ziff (ziff@altiscale.com)
+
+## License
+
+Apache License Version 2.0 (See LICENSE.txt)
