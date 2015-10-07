@@ -35,12 +35,51 @@ module MvImplementation
   # mv any number of sources to an existing directory
   #
   def mv_to_dir(dir, sources)
-    
+    sources.each do |src_file|
+      dst_file = "#{dir}/#{File.basename(src_file)}"
+      mv_to_file(dst_file, src_file)
+    end
   end
 
   #
   # mv a single source to a non-directory target
   #
-  def merge_content_summary(target, source)
+  def mv_to_file(target, source)
+    # Check whether the source file exists
+    begin
+      stat = @client.stat(source)
+    rescue WebHDFS::FileNotFoundError
+      raise "source #{source} does not exist"
+    end
+    
+    # Check whether the target file exists
+    stat = nil
+    begin
+      stat = @client.stat(target)
+    rescue WebHDFS::FileNotFoundError
+      # fall through, leave stat = nil
+    end
+    target_exist = stat ? true : false
+
+    if target_exist 
+      overwrite = !@settings.no_overwrite
+      #if @settings.interactive
+      #  puts "overwrite #{target}? (y/n [n])"
+      #  overwrite = gets
+      #end
+      if @settings.force || overwrite
+        @client.delete(target)
+        mv_file(target, source)
+      end
+    else
+      mv_file(target, source)
+    end
+  end
+
+  def mv_file(target, source)
+    @client.rename(source, target)
+    if @settings.verbose
+      puts "#{source} -> #{target}"
+    end
   end
 end
