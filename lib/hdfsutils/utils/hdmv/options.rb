@@ -33,6 +33,10 @@ module MvOptions
               'are moved.') do
         settings.verbose = true
       end
+      opts.on('--overlay', 'Moving files and overlaying them into ' \
+              'an existing directory.') do
+        settings.overlay = true
+      end
     end
   end
 end
