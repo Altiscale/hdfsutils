@@ -20,7 +20,6 @@ module WebmockUsingHdfsMock
     header
     setup_environment
     stub_requests
-    stub_404_request
   end
 
   def header
@@ -75,27 +74,6 @@ module WebmockUsingHdfsMock
                                                            JSON.generate(@mockhdfs.rename(hdfs_source_path, hdfs_dest_path))
                                                          end,
                                                    headers: @ctheader)
-
-    #       stub_request(:put, "http://nn-cluster.nsdc.altiscale.com:50070/webhdfs/v1/a/bar.txt?destination=/a/foo.txt&op=RENAME&user.name=testuser").
-
-    #       stub_request(:put, "http://nn-cluster.nsdc.altiscale.com:50070/webhdfs/v1/a/bar.txt?destination=/a/foo.txt&op=RENAME&user.name=testuser").
-
-    #     stub_request(:delete, getfilestatus_template).to_return(body: lambda do |request|
-    #                                                               hdfs_path = parse_request request
-    #                                                               JSON.generate(@mockhdfs.stat(hdfs_path))
-    #                                                             end,
-    #                                                             headers: @ctheader)
-
-    # http://nn-cluster.nsdc.altiscale.com:50070/webhdfs/v1/a/bar.txt?op=DELETE&user.name=testuser
-  end
-
-  def stub_404_request
-    test404url = 'http://' + @hostname + ':' + @port +
-                 '/webhdfs/v1/nosuchdir/nosuchfile' +
-                 '?op=GETFILESTATUS&user.name=' +
-                 @username
-
-    stub_request(:get, test404url).to_return(status: 404)
   end
 
   def setup_environment
