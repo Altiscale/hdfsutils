@@ -1,5 +1,5 @@
 #
-# Library: webmock_using_hdfs_mock.rb
+# Library: webhdfs_mock.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
@@ -11,16 +11,16 @@
 #
 # webmock for dynamic hdfs mock
 #
-module WebmockUsingHdfsMock
+module WebhdfsMock
   require 'addressable/template'
 
   public
 
-  def webmock_using_hdfs_mock(mockhdfs)
-    @mockhdfs = mockhdfs
+  def setup_webhdfs_mock(hdfs)
+    @webhdfs = WebhdfsMock.new(hdfs)
     header
     setup_environment
-    @general_t = Addressable::Template.new "http://#{@host}:#{@port}" +
+    @common_t = Addressable::Template.new "http://#{@host}:#{@port}" +
       '/webhdfs/v1{/segments*}?op={op}&user.name={user}'
     stub_liststatus
     stub_getfilestatus
@@ -32,7 +32,6 @@ module WebmockUsingHdfsMock
 
   def header
     @ctheader = { 'Content-Type' => 'application/json' }
-
     @host = 'nn-cluster.nsdc.altiscale.com'
     @port = '50070'
     @username = 'testuser'
@@ -40,7 +39,7 @@ module WebmockUsingHdfsMock
 
   def parse_request(request)
     uri = Addressable::URI.parse request.uri
-    e = @general_t.extract(uri)
+    e = @common_t.extract(uri)
     '/' + e['segments'].join('/')
   end
 
@@ -57,9 +56,9 @@ module WebmockUsingHdfsMock
       '/webhdfs/v1{/segments*}?op=LISTSTATUS&user.name={user}'
     stub_request(:get, liststatus_t)
       .to_return(body: lambda do |request|
-                         hdfs_path = parse_request(request)
-                         JSON.generate(@mockhdfs.ls(hdfs_path))
-                       end,
+                   hdfs_path = parse_request(request)
+                   JSON.generate(@webhdfs.ls(hdfs_path))
+                 end,
                  headers: @ctheader)
   end
 
@@ -68,9 +67,9 @@ module WebmockUsingHdfsMock
       '/webhdfs/v1{/segments*}?op=GETFILESTATUS&user.name={user}'
     stub_request(:get, getfilestatus_t)
       .to_return(body: lambda do |request|
-                         hdfs_path = parse_request request
-                         JSON.generate(@mockhdfs.stat(hdfs_path))
-                       end,
+                   hdfs_path = parse_request request
+                   JSON.generate(@webhdfs.stat(hdfs_path))
+                 end,
                  headers: @ctheader)
   end
 
@@ -79,9 +78,9 @@ module WebmockUsingHdfsMock
       '/webhdfs/v1{/segments*}?op=DELETE&user.name={user}'
     stub_request(:delete, delete_t)
       .to_return(body: lambda do |request|
-                         hdfs_path = parse_request request
-                         JSON.generate(@mockhdfs.delete(hdfs_path))
-                       end,
+                   hdfs_path = parse_request request
+                   JSON.generate(@webhdfs.delete(hdfs_path))
+                 end,
                  headers: @ctheader)
   end
 
@@ -91,9 +90,9 @@ module WebmockUsingHdfsMock
       '&user.name={user}'
     stub_request(:put, @rename_t)
       .to_return(body: lambda do |request|
-                         source, dest = parse_rename_request request
-                         JSON.generate(@mockhdfs.rename(source, dest))
-                       end,
+                   source, dest = parse_rename_request request
+                   JSON.generate(@webhdfs.rename(source, dest))
+                 end,
                  headers: @ctheader)
   end
 
@@ -101,5 +100,68 @@ module WebmockUsingHdfsMock
     ENV['HDFS_HOST'] = @host
     ENV['HDFS_PORT'] = @port
     ENV['HDFS_USERNAME'] = @username
+  end
+
+  public
+
+  class WebhdfsMock
+
+    def initialize(hdfs)
+      @hdfs = hdfs
+    end
+
+    def stat(path)
+      return mkstat(@hdfs.get_node(path))
+    rescue HdfsMock::Hdfs::FileNotFoundError
+      raise WebHDFS::FileNotFoundError
+    end
+
+    def ls(path)
+      node = @hdfs.get_node(path)
+      mklsstat(node)
+    end
+
+    def delete(path)
+      @hdfs.delete(path)
+      {}
+    end
+
+    def rename(source, target)
+      @hdfs.rename(source, target)
+      {}
+    end
+
+    private
+
+    def mk_single_stat(node)
+      {
+        'accessTime' => node[:accessTime],
+        'blockSize' => node[:blockSize],
+        'childrenNum' => node[:children] ? node[:children].size : 0,
+        'fileId' => node[:fileId],
+        'group' => node[:group],
+        'length' => node[:length],
+        'modificationTime' => node[:modificationTime],
+        'owner' => node[:owner],
+        'pathSuffix' => node[:pathSuffix],
+        'permission' => node[:permission],
+        'replication' => node[:replication],
+        'type' => node[:type]
+      }
+    end
+
+    def mkstat(node)
+      {
+        'FileStatus' => mk_single_stat(node)
+      }
+    end
+
+    def mklsstat(node)
+      {
+        'FileStatuses' => {
+          'FileStatus' => node[:children].values.map { |n| mk_single_stat(n) }
+        }
+      }
+    end
   end
 end

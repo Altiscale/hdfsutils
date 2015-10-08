@@ -8,11 +8,23 @@
 
 require_relative '../spec_helper'
 require_relative 'hdfs_mock'
-require_relative 'webmock_using_hdfs_mock'
+require_relative 'webhdfs_mock'
 require 'utils/hdfind/find'
 
+describe WebhdfsMock::WebhdfsMock do
+
+  it 'should support stat' do
+    mockhdfs = HdfsMock::Hdfs.new
+    mockhdfs.mkdir('/source')
+    subject = WebhdfsMock::WebhdfsMock.new(mockhdfs)
+    stat = subject.stat('/source')
+    expect(stat).not_to be_nil
+  end
+
+end
+
 describe HdfsUtils::Find do
-  include WebmockUsingHdfsMock
+  include WebhdfsMock
 
   it 'should do something interesting' do
     mockhdfs = HdfsMock::Hdfs.new
@@ -23,7 +35,7 @@ describe HdfsUtils::Find do
     mockhdfs.put('/source/a/b/foo.txt', 'now is not the time')
     mockhdfs.mkdir('/source/a/c')
     mockhdfs.put('/source/a/c/baz.txt', 'this is another time')
-    webmock_using_hdfs_mock(mockhdfs)
+    setup_webhdfs_mock(mockhdfs)
 
     find_output = <<EOS
 /

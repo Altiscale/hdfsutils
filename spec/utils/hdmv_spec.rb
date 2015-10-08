@@ -8,19 +8,19 @@
 
 require_relative '../spec_helper'
 require_relative 'hdfs_mock'
-require_relative 'webmock_using_hdfs_mock'
+require_relative 'webhdfs_mock'
 require 'utils/hdmv/mv'
 require 'utils/hdls/ls'
 require 'utils/hdfind/find'
 
 describe HdfsUtils::Mv do
-  include WebmockUsingHdfsMock
+  include WebhdfsMock
 
   it 'should move a simple file to another simple file' do
     mockhdfs = HdfsMock::Hdfs.new
     mockhdfs.mkdir('/a')
     mockhdfs.put('/a/bar.txt', 'now is the time')
-    webmock_using_hdfs_mock(mockhdfs)
+    setup_webhdfs_mock(mockhdfs)
 
     mv_output = <<EOS
 /a/bar.txt -> /a/foo.txt
@@ -46,7 +46,7 @@ EOS
     mockhdfs.mkdir('/a')
     mockhdfs.put('/a/bar.txt', 'now is the time')
     mockhdfs.put('/a/foo.txt', 'now is no longer the time')
-    webmock_using_hdfs_mock(mockhdfs)
+    setup_webhdfs_mock(mockhdfs)
 
     mv_output = <<EOS
 /a/bar.txt -> /a/foo.txt
@@ -74,7 +74,7 @@ EOS
     mockhdfs.mkdir('/a')
     mockhdfs.put('/a/bar.txt', 'now is the time')
     mockhdfs.put('/a/foo.txt', 'now is no longer the time')
-    webmock_using_hdfs_mock(mockhdfs)
+    setup_webhdfs_mock(mockhdfs)
 
     expect do
       HdfsUtils::Mv.new('hdmv',
@@ -110,7 +110,7 @@ EOS
     mockhdfs.put('/target/a/b/baz.txt', 'blah blah blah')
     mockhdfs.mkdir('/target/a/d')
     mockhdfs.put('/target/a/d/fizz.txt', 'blah blah blah')
-    webmock_using_hdfs_mock(mockhdfs)
+    setup_webhdfs_mock(mockhdfs)
 
     expect do
       HdfsUtils::Mv.new('hdmv',

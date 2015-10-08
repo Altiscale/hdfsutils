@@ -1,4 +1,3 @@
-#
 # Test: hdfs_mock.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
@@ -10,53 +9,69 @@ require_relative '../spec_helper'
 require_relative 'hdfs_mock'
 
 describe HdfsMock::Hdfs do
-  it 'should be initially empty' do
-    stat = subject.stat('/')
-    expect(stat).not_to be_nil
-    expect(stat['FileStatus']['childrenNum']).to eq(0)
-    expect(stat['FileStatus']['type']).to eq('DIRECTORY')
+  it 'should initially have only a root' do
+    node = subject.get_node('/')
+    expect(node).not_to be_nil
+    expect(node[:children].size).to eq(0)
+    expect(node[:type]).to eq('DIRECTORY')
   end
 
   it 'should support mkdir' do
     subject.mkdir('/foo')
-    stat = subject.stat('/foo')
-    expect(stat).not_to be_nil
-    expect(stat['FileStatus']['childrenNum']).to eq(0)
-    expect(stat['FileStatus']['pathSuffix']).to eq('foo')
-    stat = subject.stat('/')
-    expect(stat['FileStatus']['childrenNum']).to eq(1)
+    node = subject.get_node('/foo')
+    expect(node).not_to be_nil
+    expect(node[:children].size).to eq(0)
+    expect(node[:pathSuffix]).to eq('foo')
+    node = subject.get_node('/')
+    expect(node[:children].size).to eq(1)
     subject.mkdir('/bar')
-    stat = subject.stat('/')
-    expect(stat['FileStatus']['childrenNum']).to eq(2)
+    node = subject.get_node('/')
+    expect(node[:children].size).to eq(2)
   end
 
   it 'should support put' do
     subject.put('/foo', 'now is the time')
-    stat = subject.stat('/foo')
-    expect(stat).not_to be_nil
-    expect(stat['FileStatus']['childrenNum']).to eq(0)
-    expect(stat['FileStatus']['pathSuffix']).to eq('foo')
-    expect(stat['FileStatus']['type']).to eq('FILE')
+    node = subject.get_node('/foo')
+    expect(node).not_to be_nil
+    expect(node[:children]).to be_nil
+    expect(node[:pathSuffix]).to eq('foo')
+    expect(node[:type]).to eq('FILE')
+  end
+
+  it 'should support get' do
+    subject.put('/foo', 'now is the time')
     content = subject.get('/foo')
     expect(content).to eq('now is the time')
   end
 
-  it 'should support ls' do
-    subject.mkdir('/source')
-    lsstat = subject.ls('/source')
-    expect(lsstat['FileStatuses']['FileStatus'].length).to eq(0)
+  it 'should support delete for a file' do
+    subject.put('/foo', 'now is the time')
+    subject.delete('/foo')
+    expect { subject.get_node('/foo') }
+      .to raise_error(HdfsMock::Hdfs::FileNotFoundError)
+  end
 
-    subject.mkdir('/source/a')
-    stat = subject.stat('/source/a')
-    expect(stat['FileStatus']['childrenNum']).to eq(0)
+  it 'should support delete for a directory' do
+    subject.mkdir('/foo')
+    subject.delete('/foo')
+    expect { subject.get_node('/foo') }
+      .to raise_error(HdfsMock::Hdfs::FileNotFoundError)
+  end
 
-    subject.mkdir('/source/a/b')
-    subject.put('/source/a/b/bar.txt', 'now is the time')
-    subject.put('/source/a/b/foo.txt', 'now is not the time')
-    stat = subject.stat('/source/a/b')
-    expect(stat['FileStatus']['childrenNum']).to eq(2)
-    lsstat = subject.ls('/source/a/b')
-    expect(lsstat['FileStatuses']['FileStatus'].length).to eq(2)
-    expect(lsstat['FileStatuses']['FileStatus'].map { |s| s['pathSuffix'] }).to eq(['bar.txt', 'foo.txt'])
+  it 'should support rename for a file' do
+    subject.put('/foo', 'now is the time')
+    subject.rename('/foo', '/bar')
+    expect { subject.get_node('/foo') }
+      .to raise_error(HdfsMock::Hdfs::FileNotFoundError)
+    content = subject.get('/bar')
+    expect(content).to eq('now is the time')
+  end
+
+  it 'should support rename for a directory' do
+    subject.mkdir('/foo')
+    subject.rename('/foo', '/bar')
+    expect { subject.get_node('/foo') }
+      .to raise_error(HdfsMock::Hdfs::FileNotFoundError)
+    expect(subject.get_node('/bar')).not_to be_nil
   end
 end

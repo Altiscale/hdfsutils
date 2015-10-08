@@ -1,21 +1,27 @@
 #
-# Library: common_spec_webmock.rb
+# Library: hdfs_mock.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0
 #   http://www.apache.org/licenses/LICENSE-2.0
+
 #
 # Mock hdfs for testing
 #
-
-require 'webhdfs'
 module HdfsMock
+  #
+  # Mock hdfs for testing
+  #
   class Hdfs
     public
 
+    class Error < StandardError; end
+    class FileNotFoundError < Error; end
+    class FileExistsError < Error; end
+
     def initialize
-      @fileId = 0
-      @blockSize = 0
+      @file_id = 0
+      @block_size = 0
       @group = 'hdfs'
       @now = 0
       @owner = 'testuser'
@@ -39,40 +45,32 @@ module HdfsMock
 
     def get(path)
       node = resolve_path(split_path(path))
-      fail WebHDFS::FileNotFoundError unless node
+      fail FileNotFoundError, path unless node
       node[:content]
     end
 
     def delete(path)
       parent, base = get_parent(path)
       child = parent[:children][base]
-      fail WebHDFS::FileNotFoundError unless child
+      fail FileNotFoundError unless child
       parent[:children].delete(base)
     end
 
     def rename(sourcepath, destpath)
       sourceparent, sourcebase = get_parent(sourcepath)
       child = sourceparent[:children][sourcebase]
-      fail WebHDFS::FileNotFoundError unless child
+      fail FileNotFoundError, sourcepath unless child
       destparent, destbase = get_parent(destpath)
-      fail WebHDFS::Error if destparent[:children][destbase]
+      fail FileExistsError, destpath if destparent[:children][destbase]
       sourceparent[:children].delete(sourcebase)
       destparent[:children][destbase] = child
       child[:pathSuffix] = destbase
-      {}
     end
 
-    def stat(path)
+    def get_node(path)
       node = resolve_path(split_path(path))
-      fail WebHDFS::FileNotFoundError unless node
-      mkstat(node)
-    end
-
-    def ls(path)
-      #      puts "@hash = #{@hash}"
-      node = resolve_path(split_path(path))
-      fail WebHDFS::FileNotFoundError unless node
-      mklsstat(node)
+      fail FileNotFoundError, path unless node
+      node
     end
 
     private
@@ -83,9 +81,7 @@ module HdfsMock
       base = patharray[-1]
       #      puts "parent #{parent} base #{base}"
       node = resolve_path(parent)
-      fail WebHDFS::FileNotFoundError unless node
-      fail WebHDFS::Error unless node[:type] == 'DIRECTORY'
-      # raise WebHDFS::Error if node[:children][base]
+      fail FileNotFoundError, path unless node
       [node, base]
     end
 
@@ -97,70 +93,24 @@ module HdfsMock
     end
 
     def mkemptydir(basename)
-      @fileId = @fileId + 1
+      @file_id += 1
       {
-        accessTime: @now,
-        blockSize: @blockSize,
-        children: {},
-        fileId: @fileId,
-        group: @group,
-        length: 0,
-        modificationTime: @now,
-        owner: @owner,
-        pathSuffix: basename,
-        permission: @permissions,
-        replication: @replication,
+        accessTime: @now, blockSize: @block_size, children: {},
+        fileId: @file_id, group: @group, length: 0,
+        modificationTime: @now, owner: @owner, pathSuffix: basename,
+        permission: @permissions, replication: @replication,
         type: 'DIRECTORY'
       }
     end
 
     def mkfile(basename, content)
-      @fileId = @fileId + 1
+      @file_id += 1
       {
-        accessTime: @now,
-        blockSize: @blockSize,
-        children: nil,
-        fileId: @fileId,
-        group: @group,
-        length: 0,
-        modificationTime: @now,
-        owner: @owner,
-        pathSuffix: basename,
-        permission: @permissions,
-        replication: @replication,
-        type: 'FILE',
-        content: content
-      }
-    end
-
-    def mkstat(node)
-      {
-        'FileStatus' => mk_single_stat(node)
-      }
-    end
-
-    def mk_single_stat(node)
-      {
-        'accessTime' => node[:accessTime],
-        'blockSize' => node[:blockSize],
-        'childrenNum' => node[:children] ? node[:children].size : 0,
-        'fileId' => node[:fileId],
-        'group' => node[:group],
-        'length' => node[:length],
-        'modificationTime' => node[:modificationTime],
-        'owner' => node[:owner],
-        'pathSuffix' => node[:pathSuffix],
-        'permission' => node[:permission],
-        'replication' => node[:replication],
-        'type' => node[:type]
-      }
-    end
-
-    def mklsstat(node)
-      {
-        'FileStatuses' => {
-          'FileStatus' => node[:children].values.map { |n| mk_single_stat(n) }
-        }
+        accessTime: @now, blockSize: @block_size,
+        fileId: @file_id, group: @group, length: 0,
+        modificationTime: @now, owner: @owner, pathSuffix: basename,
+        permission: @permissions, replication: @replication,
+        type: 'FILE', content: content
       }
     end
 
