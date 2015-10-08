@@ -130,7 +130,7 @@ module MvImplementation
       #  puts "overwrite #{target}? (y/n [n])"
       #  overwrite = gets
       #end
-      if @settings.force && !@settings.no_overwrite
+      if @settings.force || !@settings.no_overwrite
         @client.delete(target)
         mv_file(target, source)
       end

@@ -125,10 +125,12 @@ EOS
 /target/a
 /target/a/b
 /target/a/b/bar.txt
-/target/a/b/fizz.txt
+/target/a/b/baz.txt
 /target/a/b/foo.txt
+/target/c
 /target/a/c/baz.txt
-/target/a/d/baz.txt
+/target/d
+/target/a/d/fizz.txt
 EOS
 
     expect do
