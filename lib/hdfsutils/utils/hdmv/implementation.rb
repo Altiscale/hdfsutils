@@ -51,47 +51,42 @@ module MvImplementation
   end
 
   def mv_suboverlay(parent_target, parent_source)
-    # get list of source
+    # get list of source and target
     source_files = target_files = nil
     begin
       source_files = @client.list(parent_source)
-      #files.each do |file|
-      #  puts "file: #{file['type']}, #{file['pathSuffix']}" 
-      #end
     rescue WebHDFS::FileNotFoundError
-      raise "source is wrong #{parent_source}"  
+      raise "ERROR: source(#{parent_source}) does not exist"  
     end
     begin
       target_files = @client.list(parent_target)
     rescue WebHDFS::FileNotFoundError
-      raise "target is wrong #{parent_target}"  
+      raise "ERROR: target(#{parent_target}) does not exist"  
     end
-    # get list of target
-    source_files.each do |source|
+
+    source_files.each do |source_stat|
       isFound = false
-      target_files.each do |target|
-        if source['pathSuffix'] == target['pathSuffix']
-          if source['type'] != target['type']
-            puts "ERROR: source(#{source['pathSuffix']}) and target(#{target['pathSuffix']}) has different type"
+      target_files.each do |target_stat|
+        source_path = "#{parent_source}/#{source_stat['pathSuffix']}"
+        target_path = "#{parent_target}/#{target_stat['pathSuffix']}"
+        # source and target has the same filename
+        if source_stat['pathSuffix'] == target_stat['pathSuffix']
+          if source_stat['type'] != target_stat['type']
+            puts "ERROR: source(#{source_path}:#{source_stat['type']}) and target(#{target_path}:#{target_stat['type']}) have different type"
           else
             isFound = true
-            source_name = "#{parent_source}/#{source['pathSuffix']}"
-            target_name = "#{parent_target}/#{target['pathSuffix']}"
-            if source['type'] == 'DIRECTORY'
-              #puts "mv_suboverlay(#{target_name}, #{source_name})"
-              mv_suboverlay(target_name, source_name)
+            if source_stat['type'] == 'DIRECTORY'
+              mv_suboverlay(target_path, source_path)
             else
-              #puts "mv_to_file(#{target_name}, #{source_name})"
-              mv_to_file(target_name, source_name)
+              mv_to_file(target_path, source_path)
             end
           end
         end
       end
       if isFound == false
-        source_name = "#{parent_source}/#{source['pathSuffix']}"
-        target_name = "#{parent_target}/#{source['pathSuffix']}"
-        #puts "mv_to_file(#{target_name}, #{source_name})"
-        mv_to_file(target_name, source_name)
+        source_path = "#{parent_source}/#{source_stat['pathSuffix']}"
+        target_path = "#{parent_target}/#{source_stat['pathSuffix']}"
+        mv_to_file(target_path, source_path)
       end
     end
   end
@@ -100,9 +95,9 @@ module MvImplementation
   # mv any number of sources to an existing directory
   #
   def mv_to_dir(dir, sources)
-    sources.each do |src_file|
-      dst_file = "#{dir}/#{File.basename(src_file)}"
-      mv_to_file(dst_file, src_file)
+    sources.each do |source|
+      target = "#{dir}/#{File.basename(source)}"
+      mv_to_file(target, source)
     end
   end
 
@@ -110,6 +105,7 @@ module MvImplementation
   # mv a single source to a non-directory target
   #
   def mv_to_file(target, source)
+    source_stat = target_stat = nil
     # Check whether the source file exists
     begin
       source_stat = @client.stat(source)
@@ -127,12 +123,12 @@ module MvImplementation
 
     if target_exist 
       if source_stat['type'] != target_stat['type']
-        puts "ERROR: #{source} and #{target} has different type"
+        puts "ERROR: source(#{source}:#{source_stat['type']}) and target(#{target}:#{target_stat['type']}) have different type"
       else
         overwrite = @settings.no_overwrite ? "n" : "y"
         if @settings.interactive
           overwrite = ask("overwrite #{target}? (y/n [n]) ") { |yn| yn.limit = 1; yn.validate = /[yn]/i } 
-          puts "overwrite: #{overwrite}"
+          #puts "overwrite: #{overwrite}"
         end
 
         if @settings.force || overwrite == "y"
