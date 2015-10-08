@@ -26,5 +26,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '0.28.0'
   spec.add_runtime_dependency 'webhdfs', '~> 0.7.0'
   spec.add_runtime_dependency 'gssapi', '~> 1.2'
+  spec.add_runtime_dependency 'highline', '~> 1.7'
 end
 

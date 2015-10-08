@@ -9,6 +9,7 @@
 #
 # This module implements mv.
 #
+require "highline/import"
 module MvImplementation
   #
   # The eponymous function moves a list of sources to a target
@@ -111,28 +112,33 @@ module MvImplementation
   def mv_to_file(target, source)
     # Check whether the source file exists
     begin
-      stat = @client.stat(source)
+      source_stat = @client.stat(source)
     rescue WebHDFS::FileNotFoundError
       raise "source #{source} does not exist"
     end
     
     # Check whether the target file exists
-    stat = nil
     begin
-      stat = @client.stat(target)
+      target_stat = @client.stat(target)
     rescue WebHDFS::FileNotFoundError
       # fall through, leave stat = nil
     end
-    target_exist = stat ? true : false
+    target_exist = target_stat ? true : false
 
     if target_exist 
-      #if @settings.interactive
-      #  puts "overwrite #{target}? (y/n [n])"
-      #  overwrite = gets
-      #end
-      if @settings.force || !@settings.no_overwrite
-        @client.delete(target)
-        mv_file(target, source)
+      if source_stat['type'] != target_stat['type']
+        puts "ERROR: #{source} and #{target} has different type"
+      else
+        overwrite = @settings.no_overwrite ? "n" : "y"
+        if @settings.interactive
+          overwrite = ask("overwrite #{target}? (y/n [n]) ") { |yn| yn.limit = 1; yn.validate = /[yn]/i } 
+          puts "overwrite: #{overwrite}"
+        end
+
+        if @settings.force || overwrite == "y"
+          @client.delete(target)
+          mv_file(target, source)
+        end
       end
     else
       mv_file(target, source)
