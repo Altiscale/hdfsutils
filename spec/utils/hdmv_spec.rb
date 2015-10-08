@@ -11,6 +11,7 @@ require_relative 'hdfs_mock'
 require_relative 'webmock_using_hdfs_mock'
 require 'utils/hdmv/mv'
 require 'utils/hdls/ls'
+require 'utils/hdfind/find'
 
 describe HdfsUtils::Mv do
   include WebmockUsingHdfsMock
@@ -38,5 +39,47 @@ EOS
       HdfsUtils::Ls.new('hdls',
                         ['/a']).run
     end.to output(ls_output).to_stdout
+  end
+
+  it 'should support overlay' do
+    mockhdfs = HdfsMock::Hdfs.new
+    mockhdfs.mkdir('/source')
+    mockhdfs.mkdir('/source/a')
+    mockhdfs.mkdir('/source/a/b')
+    mockhdfs.put('/source/a/b/bar.txt', 'now is the time')
+    mockhdfs.put('/source/a/b/foo.txt', 'now is not the time')
+    mockhdfs.mkdir('/source/a/c')
+    mockhdfs.put('/source/a/c/baz.txt', 'this is another time')
+    mockhdfs.mkdir('/target')
+    mockhdfs.mkdir('/target/a')
+    mockhdfs.mkdir('/target/a/b')
+    mockhdfs.put('/target/a/b/baz.txt', 'blah blah blah')
+    mockhdfs.mkdir('/target/a/d')
+    mockhdfs.put('/target/a/d/fizz.txt', 'blah blah blah')
+    webmock_using_hdfs_mock(mockhdfs)
+
+    expect do
+      HdfsUtils::Mv.new('hdmv',
+                        [
+                          # uncomment the next line when overlay is implemented
+                          # '--overlay',
+                          '/source', '/target']).run
+    end.to output('').to_stdout
+
+    find_output = <<EOS
+/target
+/target/a
+/target/a/b
+/target/a/b/bar.txt
+/target/a/b/fizz.txt
+/target/a/b/foo.txt
+/target/a/c/baz.txt
+/target/a/d/baz.txt
+EOS
+
+    expect do
+      HdfsUtils::Find.new('hdfind',
+                          ['/target']).run
+    end.to output(find_output).to_stdout
   end
 end
