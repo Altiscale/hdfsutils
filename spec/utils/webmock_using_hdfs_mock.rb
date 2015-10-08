@@ -62,12 +62,12 @@ module WebmockUsingHdfsMock
                                                                end,
                                                          headers: @ctheader)
 
-    # delete_template = Addressable::Template.new "http://#{@hostname}:#{@port}/webhdfs/v1{/segments*}?op=DELETE&user.name={user}"
-    # stub_request(:delete, delete_template).to_return(body: lambda do |request|
-    #                                                    hdfs_path = parse_request request
-    #                                                    JSON.generate(@mockhdfs.delete(hdfs_path))
-    #                                                  end,
-    #                                                  headers: @ctheader)
+    delete_template = Addressable::Template.new "http://#{@hostname}:#{@port}/webhdfs/v1{/segments*}?op=DELETE&user.name={user}"
+    stub_request(:delete, delete_template).to_return(body: lambda do |request|
+                                                       hdfs_path = parse_request request
+                                                       JSON.generate(@mockhdfs.delete(hdfs_path))
+                                                     end,
+                                                     headers: @ctheader)
 
     @rename_template = Addressable::Template.new "http://#{@hostname}:#{@port}/webhdfs/v1{/segments*}?destination={/destination*}&op=RENAME&user.name={user}"
     stub_request(:put, @rename_template).to_return(body: lambda do |request|
