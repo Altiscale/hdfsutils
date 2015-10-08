@@ -159,7 +159,8 @@ module WebhdfsMock
     def mklsstat(node)
       {
         'FileStatuses' => {
-          'FileStatus' => node[:children].values.map { |n| mk_single_stat(n) }
+          'FileStatus' => node[:children].keys.sort.map { |k|
+            mk_single_stat(node[:children][k]) }
         }
       }
     end

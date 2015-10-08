@@ -95,7 +95,6 @@ EOS
   end
 
   it 'should support overlay' do
-    skip 'is skipped'
     mockhdfs = HdfsMock::Hdfs.new
     mockhdfs.mkdir('/source')
     mockhdfs.mkdir('/source/a')
@@ -115,8 +114,7 @@ EOS
     expect do
       HdfsUtils::Mv.new('hdmv',
                         [
-                          # uncomment the next line when overlay is implemented
-                          # '--overlay',
+                          '--overlay',
                           '/source', '/target']).run
     end.to output('').to_stdout
 
@@ -127,9 +125,9 @@ EOS
 /target/a/b/bar.txt
 /target/a/b/baz.txt
 /target/a/b/foo.txt
-/target/c
+/target/a/c
 /target/a/c/baz.txt
-/target/d
+/target/a/d
 /target/a/d/fizz.txt
 EOS
 
