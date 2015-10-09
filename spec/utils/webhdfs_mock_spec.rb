@@ -12,7 +12,6 @@ require_relative 'webhdfs_mock'
 require 'utils/hdfind/find'
 
 describe WebhdfsMock::WebhdfsMock do
-
   it 'should support stat' do
     mockhdfs = HdfsMock::Hdfs.new
     mockhdfs.mkdir('/source')
@@ -20,7 +19,6 @@ describe WebhdfsMock::WebhdfsMock do
     stat = subject.stat('/source')
     expect(stat).not_to be_nil
   end
-
 end
 
 describe HdfsUtils::Find do

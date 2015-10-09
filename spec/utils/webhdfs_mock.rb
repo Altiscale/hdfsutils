@@ -56,9 +56,9 @@ module WebhdfsMock
       '/webhdfs/v1{/segments*}?op=LISTSTATUS&user.name={user}'
     stub_request(:get, liststatus_t)
       .to_return(body: lambda do |request|
-                   hdfs_path = parse_request(request)
-                   JSON.generate(@webhdfs.ls(hdfs_path))
-                 end,
+                         hdfs_path = parse_request(request)
+                         JSON.generate(@webhdfs.ls(hdfs_path))
+                       end,
                  headers: @ctheader)
   end
 
@@ -67,9 +67,9 @@ module WebhdfsMock
       '/webhdfs/v1{/segments*}?op=GETFILESTATUS&user.name={user}'
     stub_request(:get, getfilestatus_t)
       .to_return(body: lambda do |request|
-                   hdfs_path = parse_request request
-                   JSON.generate(@webhdfs.stat(hdfs_path))
-                 end,
+                         hdfs_path = parse_request request
+                         JSON.generate(@webhdfs.stat(hdfs_path))
+                       end,
                  headers: @ctheader)
   end
 
@@ -78,9 +78,9 @@ module WebhdfsMock
       '/webhdfs/v1{/segments*}?op=DELETE&user.name={user}'
     stub_request(:delete, delete_t)
       .to_return(body: lambda do |request|
-                   hdfs_path = parse_request request
-                   JSON.generate(@webhdfs.delete(hdfs_path))
-                 end,
+                         hdfs_path = parse_request request
+                         JSON.generate(@webhdfs.delete(hdfs_path))
+                       end,
                  headers: @ctheader)
   end
 
@@ -90,9 +90,9 @@ module WebhdfsMock
       '&user.name={user}'
     stub_request(:put, @rename_t)
       .to_return(body: lambda do |request|
-                   source, dest = parse_rename_request request
-                   JSON.generate(@webhdfs.rename(source, dest))
-                 end,
+                         source, dest = parse_rename_request request
+                         JSON.generate(@webhdfs.rename(source, dest))
+                       end,
                  headers: @ctheader)
   end
 
@@ -104,8 +104,10 @@ module WebhdfsMock
 
   public
 
+  #
+  # webmock for dynamic hdfs mock
+  #
   class WebhdfsMock
-
     def initialize(hdfs)
       @hdfs = hdfs
     end
@@ -159,8 +161,9 @@ module WebhdfsMock
     def mklsstat(node)
       {
         'FileStatuses' => {
-          'FileStatus' => node[:children].keys.sort.map { |k|
-            mk_single_stat(node[:children][k]) }
+          'FileStatus' => node[:children].keys.sort.map do |k|
+            mk_single_stat(node[:children][k])
+          end
         }
       }
     end

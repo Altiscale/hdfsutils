@@ -199,7 +199,7 @@ EOS
 
     expect do
       HdfsUtils::Find.new('hdfind',
-                        ['/b']).run
+                          ['/b']).run
     end.to output(find_output).to_stdout
   end
 
@@ -225,7 +225,7 @@ EOS
 
     expect do
       HdfsUtils::Find.new('hdfind',
-                        ['/a']).run
+                          ['/a']).run
     end.to output(find_output).to_stdout
 
     find_output = <<EOS
