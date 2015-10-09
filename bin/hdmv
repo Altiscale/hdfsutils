@@ -10,7 +10,7 @@
 #
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib/hdfsutils'))
-require 'utils/hdtemplate/hdmv'
+require 'utils/hdmv/mv'
 
 HdfsUtils::Mv.new('mv', ARGV).run
 exit 0
