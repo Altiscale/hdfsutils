@@ -9,7 +9,7 @@
 #
 # This module implements mv.
 #
-require "highline/import"
+require 'highline/import'
 module MvImplementation
   #
   # The eponymous function moves a list of sources to a target
@@ -19,7 +19,7 @@ module MvImplementation
     if @settings.overlay
       sources.each do |source|
         source_stat = stat?(source)
-        raise "Usage: hdmv [source_directory] [target_directory] --overlay" \
+        fail 'Usage: hdmv [source_directory] [target_directory] --overlay' \
           unless source_stat && target_stat  \
                && source_stat['type'] == 'DIRECTORY' && target_stat['type'] == 'DIRECTORY'
         mv_suboverlay(target, source)
@@ -41,11 +41,11 @@ module MvImplementation
       target_path = "#{parent_target}/#{source_stat['pathSuffix']}"
 
       target_stat = stat?(target_path)
-      if target_stat 
+      if target_stat
         if source_stat['type'] != target_stat['type']
-          puts "ERROR: " \
+          puts 'ERROR: ' \
                "source(#{source}:#{source_stat['type']}) and target(#{target}:#{target_stat['type']}) " \
-               "have different type"
+               'have different type'
         else
           if source_stat['type'] == 'DIRECTORY'
             mv_suboverlay(target_path, source_path)
@@ -72,24 +72,24 @@ module MvImplementation
   #
   # mv a single source to a non-directory target
   #
-  # Priority: -f > -n > -i 
+  # Priority: -f > -n > -i
   def mv_to_file(target, source)
     source_stat = stat?(source)
     target_stat = stat?(target)
 
-    if target_stat 
+    if target_stat
       if source_stat['type'] != target_stat['type']
-        puts "ERROR: " \
+        puts 'ERROR: ' \
              "source(#{source}:#{source_stat['type']}) and target(#{target}:#{target_stat['type']}) " \
-             "have different type"
+             'have different type'
       else
-        #overwrite = "n"
-        #if @settings.interactive || !@settings.force && !@settings.no_overwrite
-        overwrite = @settings.no_overwrite ? "n" : "y"
-        if @settings.interactive 
-          overwrite = ask("overwrite #{target}? (y/n) ") { |yn| yn.limit = 1; yn.validate = /[yn]/i } 
+        # overwrite = "n"
+        # if @settings.interactive || !@settings.force && !@settings.no_overwrite
+        overwrite = @settings.no_overwrite ? 'n' : 'y'
+        if @settings.interactive
+          overwrite = ask("overwrite #{target}? (y/n) ") { |yn| yn.limit = 1; yn.validate = /[yn]/i }
         end
-        if @settings.force || overwrite == "y"
+        if @settings.force || overwrite == 'y'
           @client.delete(target)
           rename_file(target, source)
         end

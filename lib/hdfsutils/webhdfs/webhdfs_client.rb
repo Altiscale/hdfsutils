@@ -45,10 +45,10 @@ module HdfsUtils
 
       check_kerberos
       @client
-    # rescue
-    #   raise 'failed to start webhdfs client [' +
-    #         @settings[:host] + ':' + @settings[:port] + ']: ' +
-    #         $!.message
+    rescue
+      raise 'failed to start webhdfs client [' +
+            @settings[:host] + ':' + @settings[:port] + ']: ' +
+            $!.message
     end
 
     private

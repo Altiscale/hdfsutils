@@ -55,10 +55,10 @@ module HdfsUtils
     def list?(path)
       files = nil
       begin
-      files = @client.list(path)
-        # rubocop:disable Lint/HandleExceptions
-      rescue WebHDFS::FileNotFoundError
-        raise "ERROR: #{path} does not exist"
+        files = @client.list(path)
+          # rubocop:disable Lint/HandleExceptions
+        rescue WebHDFS::FileNotFoundError
+          raise "ERROR: #{path} does not exist"
       end
       files
     end

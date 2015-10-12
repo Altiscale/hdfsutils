@@ -36,8 +36,8 @@ module HdfsUtils
       target = @args[-1]
       sources = @args[0..-2]
       mv(target, sources)
-#    rescue # never send a stack trace to the user (except when debugging)
-#      @settings.fatal.die(Fatal::BADRUN, $!)
+    rescue # never send a stack trace to the user (except when debugging)
+      @settings.fatal.die(Fatal::BADRUN, $!)
     end
 
     private
