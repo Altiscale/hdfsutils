@@ -36,5 +36,20 @@ module HdfsUtils
     def run
       fail 'Subclass of Util must override Util::run'
     end
+
+    #
+    # Useful operations common between utilities
+    #
+    def stat?(path)
+      stat = nil
+      begin
+        stat = @client.stat(path)
+      # rubocop:disable Lint/HandleExceptions
+      rescue WebHDFS::FileNotFoundError
+        # fall through, leave stat == nil
+      end
+      # rubocop:enable Lint/HandleExceptions
+      stat
+    end
   end
 end

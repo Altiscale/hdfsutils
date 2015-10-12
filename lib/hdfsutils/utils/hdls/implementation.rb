@@ -20,14 +20,7 @@ module LsImplementation
     @sp = @settings.long_format ? HdfsUtils::OutputStat.new(@settings) : nil
     @extended = @sp && @settings.extended
 
-    stat = nil
-    begin
-      stat = @client.stat(path)
-    # rubocop:disable Lint/HandleExceptions
-    rescue WebHDFS::FileNotFoundError
-      # fall through, leave stat = nil
-    end
-    # rubocop:enable Lint/HandleExceptions
+    stat = stat?(path)
     unless stat
       puts @name + ': ' + path + ': ' + 'No such file or directory'
       return
