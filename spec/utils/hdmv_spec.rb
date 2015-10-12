@@ -278,7 +278,7 @@ EOS
     setup_webhdfs_mock(mockhdfs)
 
     mv_output = <<EOS
-ERROR: source(/a/c:DIRECTORY) and target(/b/c:FILE) have different type
+ERROR: source(/a/c:DIRECTORY) and target(/b/c:FILE) have different types
 EOS
 
     expect do

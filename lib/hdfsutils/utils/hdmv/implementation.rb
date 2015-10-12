@@ -10,6 +10,10 @@
 # This module implements mv.
 #
 require 'highline/import'
+
+#
+# This module implements mv.
+#
 module MvImplementation
   #
   # The eponymous function moves a list of sources to a target
@@ -20,8 +24,9 @@ module MvImplementation
       sources.each do |source|
         source_stat = stat?(source)
         fail 'Usage: hdmv [source_directory] [target_directory] --overlay' \
-          unless source_stat && target_stat  \
-               && source_stat['type'] == 'DIRECTORY' && target_stat['type'] == 'DIRECTORY'
+          unless source_stat && target_stat \
+            && source_stat['type'] == 'DIRECTORY' \
+            && target_stat['type'] == 'DIRECTORY'
         mv_suboverlay(target, source)
       end
     else
@@ -44,8 +49,9 @@ module MvImplementation
       if target_stat
         if source_stat['type'] != target_stat['type']
           puts 'ERROR: ' \
-               "source(#{source}:#{source_stat['type']}) and target(#{target}:#{target_stat['type']}) " \
-               'have different type'
+            "source(#{source}:#{source_stat['type']}) and " \
+            "target(#{target}:#{target_stat['type']}) " \
+            'have different types'
         else
           if source_stat['type'] == 'DIRECTORY'
             mv_suboverlay(target_path, source_path)
@@ -80,14 +86,19 @@ module MvImplementation
     if target_stat
       if source_stat['type'] != target_stat['type']
         puts 'ERROR: ' \
-             "source(#{source}:#{source_stat['type']}) and target(#{target}:#{target_stat['type']}) " \
-             'have different type'
+          "source(#{source}:#{source_stat['type']}) and " \
+          "target(#{target}:#{target_stat['type']}) " \
+          'have different types'
       else
         # overwrite = "n"
-        # if @settings.interactive || !@settings.force && !@settings.no_overwrite
+        # if @settings.interactive || !@settings.force && \
+        #   !@settings.no_overwrite
         overwrite = @settings.no_overwrite ? 'n' : 'y'
         if @settings.interactive
-          overwrite = ask("overwrite #{target}? (y/n) ") { |yn| yn.limit = 1; yn.validate = /[yn]/i }
+          overwrite = ask("overwrite #{target}? (y/n) ") do |yn|
+            yn.limit = 1
+            yn.validate = /[yn]/i
+          end
         end
         if @settings.force || overwrite == 'y'
           @client.delete(target)
@@ -101,8 +112,6 @@ module MvImplementation
 
   def rename_file(target, source)
     @client.rename(source, target)
-    if @settings.verbose
-      puts "#{source} -> #{target}"
-    end
+    puts "#{source} -> #{target}" if @settings.verbose
   end
 end
