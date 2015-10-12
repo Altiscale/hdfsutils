@@ -57,7 +57,7 @@ module WebhdfsMock
     stub_request(:get, liststatus_t)
       .to_return(body: lambda do |request|
                          hdfs_path = parse_request(request)
-                         JSON.generate(@webhdfs.ls(hdfs_path))
+                         JSON.generate(@webhdfs.list(hdfs_path))
                        end,
                  headers: @ctheader)
   end
@@ -118,7 +118,7 @@ module WebhdfsMock
       raise WebHDFS::FileNotFoundError
     end
 
-    def ls(path)
+    def list(path)
       node = @hdfs.get_node(path)
       mklsstat(node)
     end
