@@ -9,11 +9,6 @@
 #
 # This module implements mv.
 #
-require 'highline/import'
-
-#
-# This module implements mv.
-#
 module MvImplementation
   #
   # The eponymous function moves a list of sources to a target
@@ -90,15 +85,10 @@ module MvImplementation
           "target(#{target}:#{target_stat['type']}) " \
           'have different types'
       else
-        # overwrite = "n"
-        # if @settings.interactive || !@settings.force && \
-        #   !@settings.no_overwrite
-        overwrite = @settings.no_overwrite ? 'n' : 'y'
-        if @settings.interactive
-          overwrite = ask("overwrite #{target}? (y/n) ") do |yn|
-            yn.limit = 1
-            yn.validate = /[yn]/i
-          end
+        overwrite = 'n'
+        if @settings.interactive || !@settings.force && \
+          !@settings.no_overwrite
+          overwrite = ask?("overwrite #{target}?")
         end
         if @settings.force || overwrite == 'y'
           @client.delete(target)

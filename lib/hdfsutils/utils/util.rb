@@ -8,6 +8,7 @@
 
 require 'settings'
 require 'webhdfs/webhdfs_client'
+require 'highline/import'
 
 module HdfsUtils
   #
@@ -61,6 +62,17 @@ module HdfsUtils
           raise "ERROR: #{path} does not exist"
       end
       files
+    end
+
+    #
+    # return: 'y' or 'n'
+    #
+    def ask?(question)
+      answer = 'n'
+      if agree("#{question} (y/n) ")
+        answer = 'y'
+      end
+      answer
     end
   end
 end

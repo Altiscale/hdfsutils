@@ -54,7 +54,7 @@ EOS
 
     expect do
       HdfsUtils::Mv.new('hdmv',
-                        ['-v', '/a/bar.txt', '/a/foo.txt']).run
+                        ['-v', '-f', '/a/bar.txt', '/a/foo.txt']).run
     end.to output(mv_output).to_stdout
 
     ls_output = <<EOS
