@@ -1,5 +1,5 @@
 #
-# Test: hdls_spec.rb
+# Test: hdmv_spec.rb
 #
 # Copyright (C) 2015 Altiscale, Inc.
 # Licensed under the Apache License, Version 2.0

@@ -69,9 +69,7 @@ module HdfsUtils
     #
     def ask?(question)
       answer = 'n'
-      if agree("#{question} (y/n) ")
-        answer = 'y'
-      end
+      answer = 'y' if agree("#{question} (y/n) ")
       answer
     end
   end

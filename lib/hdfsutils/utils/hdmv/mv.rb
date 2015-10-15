@@ -12,7 +12,7 @@ require 'utils/hdmv/implementation'
 
 module HdfsUtils
   #
-  # This class runs the ls command for HDFS.
+  # This class runs the mv command for HDFS.
   #
   class Mv < Util
     public
