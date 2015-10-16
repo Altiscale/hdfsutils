@@ -42,7 +42,10 @@ module HdfsUtils
       fail 'nil client' unless @client
       @client.open_timeout = @settings[:open_timeout]
       @client.read_timeout = @settings[:read_timeout]
-
+      if @client.respond_to? :reuse_connection
+        @logger.debug("  configured webhdfs client to reuse connection")
+        @client.reuse_connection = true
+      end
       check_kerberos
       @client
     rescue
