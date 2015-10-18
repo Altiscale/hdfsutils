@@ -41,7 +41,7 @@ module HdfsUtils
     #
     # Useful operations common between utilities
     #
-    def stat?(path)
+    def stat(path)
       stat = nil
       begin
         stat = @client.stat(path)
@@ -53,7 +53,7 @@ module HdfsUtils
       stat
     end
 
-    def list?(path)
+    def list(path)
       files = nil
       begin
         files = @client.list(path)
@@ -67,7 +67,7 @@ module HdfsUtils
     #
     # return: 'y' or 'n'
     #
-    def ask?(question)
+    def ask(question)
       answer = 'n'
       answer = 'y' if agree("#{question} (y/n) ")
       answer

@@ -23,7 +23,7 @@ module FindImplementation
     @sp = HdfsUtils::OutputStat.new(@settings, batch: 1)
     @args = ["/user/#{@settings[:username]}"] if @args.empty?
     @args.each do |path|
-      stat = stat?(path)
+      stat = stat(path)
       unless stat
         puts @name + ': ' + path + ': ' + 'No such file or directory'
         next

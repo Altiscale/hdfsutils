@@ -20,16 +20,14 @@ module MvOptions
               'destination path.') do
         settings.force = true
       end
-      opts.on('-i', 'Cause mv to write a prompt to standard error before ' \
-              'moving a file that would overwrite an existing file. ' \
-              'If the response from the standard input begins with the ' \
-              'character `y\' or `Y\', the move is attempted.') do
+      opts.on('-i', 'Cause hdmv to write a prompt to standard error before ' \
+              'moving a file that would overwrite.') do
         settings.interactive = true
       end
       opts.on('-n', 'Do not overwrite an existing file.') do
         settings.no_overwrite = true
       end
-      opts.on('-v', 'Cause mv to be verbose, showing files after they ' \
+      opts.on('-v', 'Cause hdmv to be verbose, showing files after they ' \
               'are moved.') do
         settings.verbose = true
       end

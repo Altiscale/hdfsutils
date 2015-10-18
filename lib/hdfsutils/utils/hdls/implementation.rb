@@ -20,7 +20,7 @@ module LsImplementation
     @sp = @settings.long_format ? HdfsUtils::OutputStat.new(@settings) : nil
     @extended = @sp && @settings.extended
 
-    stat = stat?(path)
+    stat = stat(path)
     unless stat
       puts @name + ': ' + path + ': ' + 'No such file or directory'
       return

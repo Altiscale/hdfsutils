@@ -14,10 +14,10 @@ module MvImplementation
   # The eponymous function moves a list of sources to a target
   #
   def mv(target, sources)
-    target_stat = stat?(target)
+    target_stat = stat(target)
     if @settings.overlay
       sources.each do |source|
-        source_stat = stat?(source)
+        source_stat = stat(source)
         fail 'Usage: hdmv [source_directory] [target_directory] --overlay' \
           unless source_stat && target_stat \
             && source_stat['type'] == 'DIRECTORY' \
@@ -35,12 +35,12 @@ module MvImplementation
   end
 
   def mv_suboverlay(parent_target, parent_source)
-    source_files = list?(parent_source)
+    source_files = list(parent_source)
     source_files.each do |source_stat|
       source_path = "#{parent_source}/#{source_stat['pathSuffix']}"
       target_path = "#{parent_target}/#{source_stat['pathSuffix']}"
 
-      target_stat = stat?(target_path)
+      target_stat = stat(target_path)
       if target_stat
         if source_stat['type'] != target_stat['type']
           puts 'ERROR: ' \
@@ -75,8 +75,8 @@ module MvImplementation
   #
   # Priority: -f > -n > -i
   def mv_to_file(target, source)
-    source_stat = stat?(source)
-    target_stat = stat?(target)
+    source_stat = stat(source)
+    target_stat = stat(target)
 
     if target_stat
       if source_stat['type'] != target_stat['type']
@@ -88,7 +88,7 @@ module MvImplementation
         overwrite = 'n'
         if @settings.interactive || !@settings.force && \
           !@settings.no_overwrite
-          overwrite = ask?("overwrite #{target}?")
+          overwrite = ask("overwrite #{target}?")
         end
         if @settings.force || overwrite == 'y'
           @client.delete(target)
