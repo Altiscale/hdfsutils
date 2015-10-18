@@ -24,14 +24,7 @@ module HdfsUtils
     end
 
     def start
-      @logger.info('starting webhdfs client')
-      [:host, :port, :username].each do |k|
-        @logger.info("  #{k}: " + @settings[k])
-      end
-      [:doas, :proxyhost, :proxyport].each do |k|
-        @logger.info("  #{k}: " + @settings[k]) if @settings[k]
-      end
-
+      start_log
       @client = WebHDFS::Client.new(@settings[:host],
                                     @settings[:port],
                                     @settings[:username],
@@ -42,11 +35,11 @@ module HdfsUtils
       fail 'nil client' unless @client
       @client.open_timeout = @settings[:open_timeout]
       @client.read_timeout = @settings[:read_timeout]
+      check_kerberos
       if @client.respond_to? :reuse_connection
-        @logger.debug("  configured webhdfs client to reuse connection")
+        @logger.debug('  configured webhdfs client to reuse connection')
         @client.reuse_connection = true
       end
-      check_kerberos
       @client
     rescue
       raise 'failed to start webhdfs client [' +
@@ -55,6 +48,16 @@ module HdfsUtils
     end
 
     private
+
+    def start_log
+      @logger.info('starting webhdfs client')
+      [:host, :port, :username].each do |k|
+        @logger.info("  #{k}: " + @settings[k])
+      end
+      [:doas, :proxyhost, :proxyport].each do |k|
+        @logger.info("  #{k}: " + @settings[k]) if @settings[k]
+      end
+    end
 
     def check_kerberos
       # TODO: make kerberos an option to avoid doing the retry
