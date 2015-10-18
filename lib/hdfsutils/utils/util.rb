@@ -8,6 +8,7 @@
 
 require 'settings'
 require 'webhdfs/webhdfs_client'
+require 'highline/import'
 
 module HdfsUtils
   #
@@ -35,6 +36,41 @@ module HdfsUtils
     #
     def run
       fail 'Subclass of Util must override Util::run'
+    end
+
+    #
+    # Useful operations common between utilities
+    #
+    def stat(path)
+      stat = nil
+      begin
+        stat = @client.stat(path)
+      # rubocop:disable Lint/HandleExceptions
+      rescue WebHDFS::FileNotFoundError
+        # fall through, leave stat == nil
+      end
+      # rubocop:enable Lint/HandleExceptions
+      stat
+    end
+
+    def list(path)
+      files = nil
+      begin
+        files = @client.list(path)
+          # rubocop:disable Lint/HandleExceptions
+        rescue WebHDFS::FileNotFoundError
+          raise "ERROR: #{path} does not exist"
+      end
+      files
+    end
+
+    #
+    # return: 'y' or 'n'
+    #
+    def ask(question)
+      answer = 'n'
+      answer = 'y' if agree("#{question} (y/n) ")
+      answer
     end
   end
 end

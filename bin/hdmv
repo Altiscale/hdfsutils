@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+#
+# Executable: hdmv
+#
+# HDFS move command
+#
+# Copyright (C) 2015 Altiscale, Inc.
+# Licensed under the Apache License, Version 2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib/hdfsutils'))
+require 'utils/hdmv/mv'
+
+HdfsUtils::Mv.new('mv', ARGV).run
+exit 0

@@ -23,14 +23,7 @@ module FindImplementation
     @sp = HdfsUtils::OutputStat.new(@settings, batch: 1)
     @args = ["/user/#{@settings[:username]}"] if @args.empty?
     @args.each do |path|
-      stat = nil
-      begin
-        stat = @client.stat(path)
-      # rubocop:disable Lint/HandleExceptions
-      rescue WebHDFS::FileNotFoundError
-        # fall through, leave stat == nil
-      end
-      # rubocop:enable Lint/HandleExceptions
+      stat = stat(path)
       unless stat
         puts @name + ': ' + path + ': ' + 'No such file or directory'
         next

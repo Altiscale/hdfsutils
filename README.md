@@ -145,6 +145,7 @@ Finished in <N> seconds (files took <M> seconds to load)
 
 - David Chaiken (chaiken@altiscale.com)
 - Max Ziff (ziff@altiscale.com)
+- HeeSoo Kim (sookim@altiscale.com)
 
 ## License
 
