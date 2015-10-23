@@ -141,6 +141,23 @@ Finished in <N> seconds (files took <M> seconds to load)
 <X> examples, <F> failures
 ```
 
+## Release Notes
+
+### 0.0.3
+
+- hdmv implementation
+- reuse webhdfs connections, if possible
+
+### 0.0.2
+
+- unix, si and iec filesize units and human-readable option
+- help formatting fix
+- improvements based on Altiscale customer feedback
+
+### 0.0.1
+
+Original Release
+
 ## Authors
 
 - David Chaiken (chaiken@altiscale.com)
