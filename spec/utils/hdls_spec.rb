@@ -13,11 +13,12 @@ require 'utils/hdls/ls'
 describe HdfsUtils::Ls do
   include CommonSpecWebmock
 
-  it 'should ls a directory as a plain file' do
+  it 'should ls a directory as a plain file with HADOOP_USER_NAME' do
     dirname = '/user/testuser/testdir'
     common_spec_webmock(dirname: dirname,
                         filename: 'not_used',
-                        dir2name: 'not_used')
+                        dir2name: 'not_used',
+                        env_username: 'HADOOP_USER_NAME')
 
     ls_output = 'drwxr-xr-x   - testuser users ' \
                 '      5812 2015-05-15 21:03 ' +

@@ -30,7 +30,7 @@ module CommonSpecWebmock
     header
     urls(options)
     more_urls(options)
-    setup_environment
+    setup_environment(options)
     stub_requests(options)
     stub_404_request
   end
@@ -311,9 +311,12 @@ module CommonSpecWebmock
     stub_request(:get, test404url).to_return(status: 404)
   end
 
-  def setup_environment
+  def setup_environment(options)
     ENV['HDFS_HOST'] = @hostname
     ENV['HDFS_PORT'] = @port
-    ENV['HDFS_USERNAME'] = @username
+    ENV.delete('HDFS_USERNAME')
+    ENV.delete('HADOOP_USER_NAME')
+    env_username = options[:env_username] || 'HDFS_USERNAME'
+    ENV[env_username] = @username
   end
 end
