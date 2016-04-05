@@ -38,7 +38,7 @@ The following environment variables may be used to configure the utilities.
   <tr>
     <td><tt>HDFS_USERNAME<tt></td>
     <td>The username used to access HDFS.</td>
-    <td>The value of the shell environment USER variable.</td>
+    <td>The value of the shell environment HADOOP_USER_NAME or USER variables.</td>
   </tr>
   <tr>
     <td><tt>HDFS_URI</tt></td>
@@ -142,6 +142,10 @@ Finished in <N> seconds (files took <M> seconds to load)
 ```
 
 ## Release Notes
+
+### 0.0.4
+
+- support HADOOP_USER_NAME shell environment variable
 
 ### 0.0.3
 

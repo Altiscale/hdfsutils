@@ -49,8 +49,9 @@ module HdfsUtils
     end
 
     def username
-      return unless ENV['HDFS_USERNAME'] || ENV['USER']
-      @settings[:username] = ENV['HDFS_USERNAME'] || ENV['USER']
+      username = ENV['HDFS_USERNAME'] || ENV['HADOOP_USER_NAME'] || ENV['USER']
+      return unless username
+      @settings[:username] = username
     end
 
     def doas
